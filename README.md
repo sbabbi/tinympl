@@ -201,6 +201,8 @@ is equivalent to:
 Lambda also work transparently with bind, that is a bind expression is automatically introspected, and it is not required to specify `bind<...>::template eval`
 when using `bind` inside `lambda`.
 
+Note: `lambda<>` only works on functions whose arguments are *only* types. It does not work on the algorithms provided by this package.
+
 =======
 	
 6) Map and Value Map
