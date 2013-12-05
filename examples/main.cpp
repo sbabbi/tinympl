@@ -5,6 +5,7 @@
 #include "lambda_example.hpp"
 #include "map_example.hpp"
 #include "value_map_example.hpp"
+#include "vector_example.hpp"
 
 #include <tinympl/fused_map.hpp>
 #include <tinympl/fused_value_map.hpp>
