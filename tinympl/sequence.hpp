@@ -43,6 +43,11 @@ template<class ... Args> struct as_sequence< sequence<Args...> > {
 
 template<class T> using as_sequence_t = typename as_sequence<T>::type;
 
+//Determine if a given type is a sequence
+template<class T,class = void> struct is_sequence : std::false_type {};
+template<class T> struct is_sequence<T,
+	typename std::conditional<true, void, as_sequence_t<T> >::type> : std::true_type {};
+
 }
 
 #endif // TINYMPL_SEQUENCE_HPP 

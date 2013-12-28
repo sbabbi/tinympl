@@ -5,6 +5,10 @@ namespace algorithm_example {
 
 using tinympl::int_;
 
+static_assert(tinympl::is_sequence< std::tuple<int,long> >::value,"is_sequence");
+static_assert(! tinympl::is_sequence< char >::value,"is_sequence");
+static_assert(tinympl::is_sequence< tinympl::sequence<int,long> >::value,"is_sequence");
+
 static_assert(
 	std::is_same<
 		tinympl::erase< 2,4,std::tuple<int,char,long,double,float,short> >::type,
