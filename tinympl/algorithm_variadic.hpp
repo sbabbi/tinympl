@@ -66,35 +66,30 @@ template< template<class ... T> class F,class ... Args> struct none_of;
 /**
  * count_if
  */
-template<template<class ... T> class F,class Head,class ... Tail> struct count_if<F,Head,Tail...>
-{
-	typedef std::integral_constant<std::size_t,
+template<template<class ... T> class F,class Head,class ... Tail> struct count_if<F,Head,Tail...> :
+	std::integral_constant<std::size_t,
 		count_if<F,Tail...>::type::value + 
-		(F<Head>::type::value ? 1 : 0)> type;
-};
+		(F<Head>::type::value ? 1 : 0)>
+{};
 
-template<template<class ... T> class F> struct count_if<F>
-{
-	typedef std::integral_constant<std::size_t,0> type;
-};
+template<template<class ... T> class F> struct count_if<F> :
+	std::integral_constant<std::size_t,0>
+{};
 
 /**
  * find_if
  */
-template<template<class ...T> class F,class Head,class ... Tail> struct find_if<F,Head,Tail...>
-{
-	typedef typename
-		std::conditional< F<Head>::type::value,
-			std::integral_constant<std::size_t,0>,
-			std::integral_constant<std::size_t,1 + 
-				find_if<F,Tail...>::type::value> 
-			>::type type;
-};
+template<template<class ...T> class F,class Head,class ... Tail> struct find_if<F,Head,Tail...> :
+	std::conditional< F<Head>::type::value,
+		std::integral_constant<std::size_t,0>,
+		std::integral_constant<std::size_t,1 + 
+			find_if<F,Tail...>::type::value> 
+		>::type
+{};
 
-template<template<class ...T> class F> struct find_if<F>
-{
-	typedef std::integral_constant<std::size_t,0> type;
-};
+template<template<class ...T> class F> struct find_if<F> : 
+	std::integral_constant<std::size_t,0>
+{};
 
 /**
  * copy_if
@@ -283,10 +278,15 @@ public:
 /**
  * min element
  */
-template<template<class ...> class Comp,class Head,class ... Tail> class min_element<Comp,Head,Tail...>
+
+namespace detail
+{
+
+template<template<class ...> class Comp,class ... > class min_element_impl;
+template<template<class ...> class Comp,class Head,class ... Tail> class min_element_impl<Comp,Head,Tail...>
 {
 	enum {
-		next_min = min_element<Comp,Tail...>::type::value
+		next_min = min_element_impl<Comp,Tail...>::type::value
 	};
 	
 	enum {
@@ -300,11 +300,16 @@ public:
 		next_min + 1)> type;
 };
 
-template<template<class ... > class Comp,class Head> struct min_element<Comp,Head>
+template<template<class ... > class Comp,class Head> struct min_element_impl<Comp,Head>
 {
 	typedef std::integral_constant<std::size_t,0> type;
 };
 
+}
+
+template<template<class ...> class Comp,class ... Args> struct min_element : 
+	detail::min_element_impl<Comp,Args...>::type
+{};
 
 /**
  * sort
@@ -378,18 +383,16 @@ public:
 /***
  * is_unique
  */
-template<class Head,class ... Tail> struct is_unique<Head,Tail...>
-{
-	typedef typename std::conditional<
+template<class Head,class ... Tail> struct is_unique<Head,Tail...> :
+	std::conditional<
 		find<Head,Tail...>::type::value == sizeof ... (Tail),
 		typename is_unique<Tail...>::type,
-		std::integral_constant<bool,false> >::type type;
-};
+		std::integral_constant<bool,false> >::type
+{};
 
-template<> struct is_unique<>
-{
-	typedef std::integral_constant<bool,true> type;
-};
+template<> struct is_unique<> :
+	std::integral_constant<bool,true>
+{};
 
 /**
  * unique
@@ -445,50 +448,44 @@ template<typename T,template<class ...> class Op> struct accumulate<T,Op>
 /**
  * all_of
  */
-template< template<class ... T> class F,class Head,class ... Args> struct all_of<F,Head,Args...>
-{
-	typedef typename std::conditional<
+template< template<class ... T> class F,class Head,class ... Args> struct all_of<F,Head,Args...> : 
+	std::conditional<
 		F<Head>::type::value,
 		typename all_of<F,Args...>::type,
-		std::integral_constant<bool,false> >::type type;
-};
+		std::integral_constant<bool,false> >::type
+{};
 
-template< template<class ... T> class F> struct all_of<F>
-{
-	typedef std::integral_constant<bool,true> type;
-};
+template< template<class ... T> class F> struct all_of<F> :
+	std::integral_constant<bool,true>
+{};
 
 /**
  * any_of
  */
-template< template<class ... T> class F,class Head,class ... Args> struct any_of<F,Head,Args...>
-{
-	typedef typename std::conditional<
+template< template<class ... T> class F,class Head,class ... Args> struct any_of<F,Head,Args...> :
+	std::conditional<
 		F<Head>::type::value,
 		std::integral_constant<bool,true>,
-		typename any_of<F,Args...>::type >::type type;
-};
+		typename any_of<F,Args...>::type >::type
+{};
 
-template< template<class ... T> class F> struct any_of<F>
-{
-	typedef std::integral_constant<bool,false> type;
-};
+template< template<class ... T> class F> struct any_of<F> :
+	std::integral_constant<bool,false> 
+{};
 
 /**
  * none_of
  */
-template< template<class ... T> class F,class Head,class ... Args> struct none_of<F,Head,Args...>
-{
-	typedef typename std::conditional<
+template< template<class ... T> class F,class Head,class ... Args> struct none_of<F,Head,Args...> :
+	std::conditional<
 		F<Head>::type::value,
 		std::integral_constant<bool,false>,
-		typename none_of<F,Args...>::type >::type type;
-};
+		typename none_of<F,Args...>::type >::type
+{};
 
-template< template<class ... T> class F> struct none_of<F>
-{
-	typedef std::integral_constant<bool,true> type;
-};
+template< template<class ... T> class F> struct none_of<F> :
+	std::integral_constant<bool,true>
+{};
 
 } }
 

@@ -302,7 +302,11 @@ template< template<class ...> class F,class ... Args> struct none_of<sequence<Ar
 template<class SequenceA,class SequenceB>
 struct unordered_equal : unordered_equal< as_sequence_t<SequenceA>, as_sequence_t<SequenceB> > {};
 
-template<class ... As,class ... Bs> struct unordered_equal<sequence<As...>,sequence<Bs...> >
+namespace detail
+{
+template<class SequenceA,class SequenceB> struct unordered_equal_impl;
+
+template<class ... As,class ... Bs> struct unordered_equal_impl<sequence<As...>,sequence<Bs...> >
 {
 	template<class T> struct check_t
 	{
@@ -315,6 +319,9 @@ template<class ... As,class ... Bs> struct unordered_equal<sequence<As...>,seque
 		typename variadic::all_of< check_t, As...>::type,
 		typename variadic::all_of< check_t, Bs...>::type >::type type;
 };
+}
+template<class ... As,class ... Bs> struct unordered_equal<sequence<As...>,sequence<Bs...> > : 
+	detail::unordered_equal_impl< sequence<As...>, sequence<Bs...> >::type {};
 
 /**
  * \class set_union Computes the union of two sets
