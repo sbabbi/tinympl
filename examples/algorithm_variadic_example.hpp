@@ -5,6 +5,20 @@
 
 namespace algorithm_variadic_example {
 
+//erase
+static_assert(
+	std::is_same<
+		tinympl::variadic::erase< 2,4,std::tuple,int,char,long,double,float,short>::type,
+		std::tuple<int,char,float,short>
+	>::value,"erase");
+
+//insert
+static_assert(
+	std::is_same<
+		tinympl::variadic::insert< 3,void*,std::tuple,int,char,long,double,float,short>::type,
+		std::tuple<int,char,long,void*,double,float,short>
+	>::value,"insert");
+
 //count_if
 static_assert(
 	tinympl::variadic::count_if< std::is_floating_point,

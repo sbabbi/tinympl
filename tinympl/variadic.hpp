@@ -77,12 +77,26 @@ public:
 	typedef typename impl<>::type type;
 };
 
-template<class T,template<class ... > class Out,class ... Args> class insert<0,T,Out,Args...>
+template<class T,template<class ... > class Out,class Head,class ... Args> class insert<0,T,Out,Head,Args...>
 {
 	template<class ... CopiedElements>
 	struct impl
 	{
-		typedef Out< CopiedElements ..., T, Args ... > type;
+		typedef Out< CopiedElements ..., T, Head,Args ... > type;
+	};
+	
+	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	
+public:
+	typedef typename impl<>::type type;
+};
+
+template<class T,template<class ... > class Out> class insert<0,T,Out>
+{
+	template<class ... CopiedElements>
+	struct impl
+	{
+		typedef Out< CopiedElements ..., T > type;
 	};
 	
 	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
