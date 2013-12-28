@@ -158,4 +158,18 @@ static_assert(
 		std::tuple<std::string,float>
 	>::type::value,"set_difference");
 
+static_assert(
+	tinympl::lexicographical_compare<
+		std::tuple< int_<3>, int_<21>, int_<7> >,
+		std::tuple< int_<3>, int_<20>, int_<7> > >::value == 1,"lexicographical_compare");
+
+static_assert(
+	tinympl::lexicographical_compare<
+		std::tuple< int_<3>, int_<21>, int_<7> >,
+		std::tuple< int_<3>, int_<21>, int_<7>,int_<5> > >::value == -1,"lexicographical_compare");
+
+static_assert(
+	tinympl::lexicographical_compare<
+		std::tuple< int_<3>, int_<21>, int_<7> >,
+		std::tuple< int_<3>, int_<21>, int_<7> > >::value == 0,"lexicographical_compare");
 }
