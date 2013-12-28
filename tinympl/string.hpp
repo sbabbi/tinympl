@@ -1,5 +1,5 @@
 /*
- * <one line to give the program's name and a brief idea of what it does.>
+ * tinympl - mini MPL library for C++11
  * Copyright (C) 2013  Ennio Barbaro <e.barbaro@sssup.it>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -47,23 +47,7 @@ private:
 	
 	template<class ... Us>
 	using unwrap = basic_string<T, Us::value ... >;
-	
-	template<class ... Strings> struct merge;
-	template<T ... pre,T ... post> struct merge<basic_string<T,pre...>, basic_string<T,post...> >
-	{
-		typedef basic_string<T,pre..., post...> type;
-	};
-	
-	template<class A,class B,class ... Others> struct merge<A,B,Others...>
-	{
-		typedef typename merge< typename merge<A,B>::type, Others ... >::type type;
-	};
-	
-	template<class A> struct merge<A>
-	{
-		typedef A type;
-	};
-	
+
 public:
 
 	template<std::size_t pos,class Str>
@@ -77,34 +61,83 @@ public:
 	template<std::size_t pos,std::size_t count>
 	using erase = tinympl::erase<pos,pos + count,
 		basic_string<T,chars...> >;
+		
+	template<class Str>
+	using append = insert<size,Str>;
 	
 	template<T ... NewChars>
 	using append_c = insert_c<size,NewChars...>;
-	
-	template<class Str>
-	using append = insert<size,Str>;
 	
 	template<std::size_t pos, std::size_t count>
 	class substr
 	{
 		static_assert( pos <= size, "substr pos out of range ");
 		static_assert( pos + count <= size, "substr count out of range");
-		
-		template<class ... Args>
-		using erase_head_t = typename variadic::erase<0,pos, unwrap, Args... >::type;
-	
+
 	public:
-		typedef typename variadic::erase<pos+count,size, erase_head_t, wrap<chars> ... >::type type;
+		typedef typename tinympl::erase<0,pos,
+			typename tinympl::erase<pos+count,size, basic_string >::type>::type type;
 	};
+	
+	template<std::size_t pos, std::size_t count, class Str>
+	class replace
+	{
+		static_assert( pos <= size, "substr pos out of range ");
+		static_assert( pos + count <= size, "substr count out of range");
+		
+		typedef typename erase<pos,count>::type str_cleared;
+		
+	public:
+		typedef typename str_cleared::template insert<pos,Str>::type type;
+	};
+	
+	template<std::size_t pos, std::size_t count, T ... ts>
+	using replace_c = replace<pos,count, basic_string<T,ts...> >;
 
 	template<class OtherStr>
 	using compare = lexicographical_compare<
 		basic_string<T,chars...>,
 		OtherStr>;
+
+private:
+	template<std::size_t i,std::size_t count>
+	using unguarded_substr = substr<i, (i+count <= size ? count : size - i)>;
+	
+	template<class Str,std::size_t i> struct find_impl :
+		std::conditional<
+			unguarded_substr<i,Str::size>::type::template
+				compare<Str>::value == 0,
+			std::integral_constant<std::size_t, i>,
+			find_impl<Str,i+1> >::type {};
+			
+	template<class Str> struct find_impl< Str,size > : std::integral_constant< std::size_t, size > {};
+
+	template<class Str,int i> struct rfind_impl :
+		std::conditional<
+			unguarded_substr<i,Str::size>::type::template
+				compare<Str>::value == 0,
+			std::integral_constant<std::size_t, i>,
+			rfind_impl<Str,i-1> >::type {};
+	
+	template<class Str> struct find_impl< Str,-1 > : std::integral_constant< std::size_t, size > {};
+
+public:
+	template<class Str>
+	using find = find_impl<Str,0>;
+	
+	template<class Str>
+	using rfind = rfind_impl<Str,size>;
+	
+	template<T ... ts> using find_c = find< basic_string<T,ts...> >;
+	template<T ... ts> using rfind_c = rfind< basic_string<T,ts...> >;
 	
 private:
 	static constexpr T v_[size + 1] = {chars ... , 0};
 };
+
+template<class T,T ... chars>
+constexpr T basic_string<T,chars...>::v_ [ size + 1];
+
 
 template<class T, const T * ptr>
 struct make_basic_string
@@ -120,21 +153,8 @@ struct make_basic_string
 	using type = typename extract<>::type;
 };
 
-template<class T>
-using make_mpl_string = typename make_basic_string<typename T::type,T::value>::type;
-
 template<const char * p>
 using string = typename make_basic_string<char,p>::type;
-
-#define TINYMPL_STRING_JOIN2(arg1,arg2) TINYMPL_DO_STRING_JOIN2(arg1,arg2)
-#define TINYMPL_DO_STRING_JOIN2(arg1,arg2) arg1 ## arg2
-
-#define MAKE_TINYMPL_STRING(name,str) \
-	struct TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name) { \
-		typedef char type; \
-		static constexpr const char value[] = str; \
-	}; \
-	typedef make_mpl_string<TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name)> name
 
 template<class T,T ... ts> struct as_sequence<basic_string<T,ts...> >
 {

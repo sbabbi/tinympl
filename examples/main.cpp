@@ -40,9 +40,17 @@ void test_fused_value_map()
 	assert( mm.at<18>() == "string");
 }
 
+MAKE_TINYMPL_STRING(str_hello_world,"Hello World");
+
+void test_runtime_string()
+{
+	assert( str_hello_world::c_str() == std::string("Hello World") );
+}
+
 int main()
 {
 	test_fused_map();
 	test_fused_value_map();
+	test_runtime_string();
 	return 0;
 }
