@@ -34,7 +34,7 @@ namespace tinympl {
  * \param Arg2 The second sequence
  * \param Out The output sequence type
  */
-template<class Arg1,class Arg2,template<class ...> class Out> struct merge : merge< as_sequence_t<Arg1>, as_sequence_t<Arg2>, Out> {};
+template<class Arg1,class Arg2,template<class ...> class Out = as_sequence<Arg1>::template rebind> struct merge : merge< as_sequence_t<Arg1>, as_sequence_t<Arg2>, Out> {};
 template<class ... Args1,class ... Args2,template<class ...> class Out> struct merge< sequence<Args1...>, sequence<Args2...>,Out>
 {
 	typedef Out< Args1..., Args2...> type;
@@ -67,7 +67,7 @@ public:
  * \param Seq The input sequence
  * \param Out The output sequence type
  */
-template<std::size_t first,std::size_t last,class Seq,template<class...> class Out> struct erase : erase<first,last, as_sequence_t<Seq>, Out> {};
+template<std::size_t first,std::size_t last,class Seq,template<class...> class Out = as_sequence<Seq>::template rebind> struct erase : erase<first,last, as_sequence_t<Seq>, Out> {};
 template<std::size_t first,std::size_t last,class ... Args,template<class...> class Out> struct erase<first,last,sequence<Args...>,Out> : 
 	variadic::erase<first,last,Out,Args...> {};
 
