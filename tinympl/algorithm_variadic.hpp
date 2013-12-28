@@ -48,7 +48,7 @@ template<template<class ... T> class F,template<class ...> class Out,class ... A
 template< typename T, template<class ... > class Out,class ... Args> using remove = remove_if< bind<equal_to, arg1,T>::template eval_t,Out,Args...>;
 
 template<template<class ... > class Cmp,class ... Args> struct min_element;
-template<template<class ... > class Cmp,class ... Args> using max_element = min_element< bind<logical_not,bind<Cmp,arg1,arg2> >::template eval_t,Args... >;
+template<template<class ... > class Cmp,class ... Args> using max_element = min_element< bind<Cmp,arg2,arg1 >::template eval_t,Args... >;
 
 template<template<class ... > class Cmp,template<class ...> class Out,class ... Args> class sort;
 template<template<class ...> class Out, class ... Args> struct reverse;
@@ -290,7 +290,7 @@ template<template<class ...> class Comp,class Head,class ... Tail> class min_ele
 	};
 	
 	enum {
-		this_min = Comp<Head,at_t<next_min,Tail...>>::type::value
+		this_min = ! Comp<at_t<next_min,Tail...>,Head>::type::value
 	};
 
 public:
