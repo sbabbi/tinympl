@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cassert>
 
 #include "algorithm_example.hpp"
 #include "algorithm_variadic_example.hpp"
@@ -22,21 +22,21 @@ void test_fused_map()
 	
 	fmap mm ("Hello","intptr",'c',44L);
 	
-	cout << mm.at<int>() << endl;
-	cout << mm.at<char>() << endl;
-	cout << mm.at<long>() << endl;
-	cout << mm.at<int*>() << endl;
+	assert(mm.at<int>() == "Hello");
+	assert(mm.at<char>() == 44L);
+	assert(mm.at<long>() == 'c');
+	assert(mm.at<int*>() == "intptr");
 }
 
 void test_fused_value_map()
 {
-	typedef tinympl::fused_value_map<int,const char*, 6,4,12,18> fmap;
+	typedef tinympl::fused_value_map<int,std::string, 6,4,12,18> fmap;
 	fmap mm = {"int","char","long","string"};
 	
-	cout << mm.at<6>() << endl;
-	cout << mm.at<4>() << endl;
-	cout << mm.at<12>() << endl;
-	cout << mm.at<18>() << endl;
+	assert( mm.at<6>() == "int");
+	assert( mm.at<4>() == "char");
+	assert( mm.at<12>() == "long");
+	assert( mm.at<18>() == "string");
 }
 
 int main()

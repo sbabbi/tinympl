@@ -11,3 +11,6 @@ add_definitions(-std=c++11)
 add_definitions(-Wall -pedantic)
 
 add_executable(tinympl_test examples/main.cpp)
+
+enable_testing()
+add_test( tinympl_runtime tinympl_test )
