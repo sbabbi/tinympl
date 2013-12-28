@@ -20,7 +20,7 @@
 #ifndef TINYMPL_VECTOR_HPP
 #define TINYMPL_VECTOR_HPP
 
-#include "algorithm_variadic.hpp"
+#include "algorithm.hpp"
 #include "sequence.hpp"
 
 namespace tinympl {
@@ -61,26 +61,13 @@ struct vector
 	};
 	
 	template<std::size_t first,std::size_t last>
-	struct erase
-	{
-		typedef typename variadic::erase<first,last,vector,Args...>::type type; 
-	};
-	
+	struct erase : tinympl::erase<first,last,vector<Args...>,vector> {};
+
 	template<std::size_t i,class ... Ts>
-	class insert
-	{
-		typedef typename variadic::erase<i, size,vector,Args...>::type head;
-		typedef typename variadic::erase<0,i,vector,Args...>::type tail;
-		
-		template<class A,class B,class C> struct merge;
-		template< class ... A1,class ... A2,class ... A3> struct merge< vector<A1...>,vector<A2...>,vector<A3...> >
-		{
-			typedef vector<A1...,A2...,A3...> type;
-		};
-	public:
-		typedef typename merge<
-			head, vector<Ts...>,tail>::type type;
-	};
+	struct insert : tinympl::insert<i,
+		sequence<Ts...>,
+		vector<Args...>,
+		vector> {};
 	
 	struct front
 	{

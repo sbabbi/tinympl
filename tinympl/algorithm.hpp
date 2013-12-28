@@ -29,6 +29,49 @@ namespace tinympl {
 /** algorithms on sequences **/
 
 /**
+ * \class merge Merge a two sequences
+ * \param Arg1 The first sequence
+ * \param Arg2 The second sequence
+ * \param Out The output sequence type
+ */
+template<class Arg1,class Arg2,template<class ...> class Out> struct merge : merge< as_sequence_t<Arg1>, as_sequence_t<Arg2>, Out> {};
+template<class ... Args1,class ... Args2,template<class ...> class Out> struct merge< sequence<Args1...>, sequence<Args2...>,Out>
+{
+	typedef Out< Args1..., Args2...> type;
+};
+
+/** 
+ * \class insert Insert a subsequence into a given sequence at a given position
+ * \param pos The insertion position in the main sequence
+ * \param SubSeq The subsequence
+ * \param Seq The main sequence
+ * \param Out The output sequence type
+ */
+template<std::size_t pos,class SubSeq,class Seq,template<class ...> class Out = as_sequence<Seq>::template rebind> struct insert : insert<pos, as_sequence_t<SubSeq>, as_sequence_t<Seq>,Out> {};
+template<std::size_t pos,class ... SubSeqArgs,class ... SeqArgs,template<class...> class Out> class insert<pos, sequence<SubSeqArgs...>, sequence<SeqArgs...>,Out>
+{
+	template<class ... Us>
+	using head_seq = sequence<Us ..., SubSeqArgs ... >;
+
+	typedef typename variadic::erase<pos,sizeof ...(SeqArgs),head_seq,SeqArgs ... >::type head;
+	typedef typename variadic::erase<0,pos,sequence,SeqArgs ... >::type tail;
+
+public:
+	typedef typename merge<head,tail,Out>::type type;
+};
+
+/**
+ * \class erase Remove a range in a given sequence
+ * \param first The first element to be removed
+ * \param last The first element which is not removed
+ * \param Seq The input sequence
+ * \param Out The output sequence type
+ */
+template<std::size_t first,std::size_t last,class Seq,template<class...> class Out> struct erase : erase<first,last, as_sequence_t<Seq>, Out> {};
+template<std::size_t first,std::size_t last,class ... Args,template<class...> class Out> struct erase<first,last,sequence<Args...>,Out> : 
+	variadic::erase<first,last,Out,Args...> {};
+
+/**
  * \class count_if Counts the number of elements which satisfy a given predicate
  * \param Sequence The input sequence
  * \param F The predicate - F<T>::type::value shall be convertible to bool
@@ -305,6 +348,34 @@ template<class ... Ts,class ... Us,template<class ...> class Out> struct set_int
  */
 template<class SequenceA,class SequenceB,template<class ...> class Out = as_sequence<SequenceA>::template rebind> struct set_difference : set_difference< as_sequence_t<SequenceA>, as_sequence_t<SequenceB>,Out> {};
 template<class ... Ts,class ... Us,template<class ...> class Out> struct set_difference<sequence<Ts...>,sequence<Us...>,Out> : variadic::remove_if< bind<variadic::count,arg1,Us...>::template eval_t, Out, Ts...> {};
+
+/**
+ * \class lexicographical_compare Compares two sequences using the given comparator
+ * \param SequenceA the first sequence
+ * \param SequenceB the second sequence
+ * \param Comparator the comparator (default less)
+ * \return An std::integral_constant<int,v> where *v* is -1 if the first sequence is lexicographically smaller than the second, 1 if the first is greater than the second and 0 if the two sequences are equal.
+ */
+template<class SequenceA,class SequenceB,template<class ...> class Comparator = less> struct lexicographical_compare : lexicographical_compare< as_sequence_t<SequenceA>, as_sequence_t<SequenceB>, Comparator> {};
+template<class AHead,class ... ATail,class BHead,class ... BTail,template<class ...> class Comparator> struct lexicographical_compare< sequence<AHead,ATail...>, sequence<BHead,BTail...>, Comparator> : 
+	std::integral_constant<int,
+		(Comparator<AHead,BHead>::type::value ? 
+			-1 :
+		Comparator<BHead,AHead>::type::value ?
+			1 : 
+		lexicographical_compare<
+			sequence<ATail...>,
+			sequence<BTail...>,
+			Comparator>::value) > {};
+
+template<class ... As,template<class ...> class Comparator> struct lexicographical_compare< sequence<As...>, sequence<>, Comparator> : 
+	std::integral_constant<int,1> {};
+	
+template<class ... Bs,template<class ...> class Comparator> struct lexicographical_compare< sequence<>, sequence<Bs...>, Comparator> : 
+	std::integral_constant<int,-1> {};
+	
+template<template<class ...> class Comparator> struct lexicographical_compare< sequence<>, sequence<>, Comparator> : 
+	std::integral_constant<int,0> {};
 
 }
 

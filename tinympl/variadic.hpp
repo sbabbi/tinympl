@@ -29,6 +29,7 @@ namespace tinympl { namespace variadic {
  */
 template<class ... Args> struct size;
 template<std::size_t i,class ... Args> struct at;
+template<std::size_t pos,class T,template<class ... > class Out,class ... Args> struct insert;
 template<std::size_t start,std::size_t end,template<class ...> class Out,class ... Args> struct erase;
 
 template<class ... Args> using size_t = typename size<Args...>::type;
@@ -57,6 +58,38 @@ template<class Head,class ... Tail> struct at<0,Head,Tail...>
 	typedef Head type;
 };
 
+/**
+ * insert
+ */
+template<std::size_t pos,class T,template<class ... > class Out,class Head,class ... Args> class insert<pos,T,Out,Head,Args...>
+{
+	template<class ... CopiedElements>
+	struct impl
+	{
+		typedef typename insert<pos-1,T,Out,Args...>::template impl<CopiedElements...,Head>::type type;
+	};
+	
+	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	
+public:
+	static_assert(pos <= sizeof ... (Args) + 1,"pos > sequence size!");
+	
+	typedef typename impl<>::type type;
+};
+
+template<class T,template<class ... > class Out,class ... Args> class insert<0,T,Out,Args...>
+{
+	template<class ... CopiedElements>
+	struct impl
+	{
+		typedef Out< CopiedElements ..., T, Args ... > type;
+	};
+	
+	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	
+public:
+	typedef typename impl<>::type type;
+};
 
 /**
  * erase

@@ -58,13 +58,10 @@ template<class ... Args> struct map
 			(variadic::find<Key, typename Args::first_type ... >::type::value == size ? 0 : 1)>;
 	
 	template<class Key,class Value>
-	struct insert
-	{
-		typedef typename std::conditional<
+	struct insert : std::conditional<
 			count<Key>::type::value == 0,
 			map<Args..., std::pair<Key,Value> >,
-			map<Args...> >::type type;
-	};
+			map<Args...> > {};
 	
 	template<class ... KeyValuePairs>
 	struct insert_many
@@ -78,7 +75,7 @@ template<class ... Args> struct map
 	template<class Key>
 	class erase
 	{
-		template<class T> struct key_comparer : std::is_same<typename T::first_type,Key> {};
+		template<class T> using key_comparer = std::is_same<typename T::first_type,Key>;
 
 	public:
 		typedef typename variadic::remove_if< key_comparer, map, Args...>::type type;
