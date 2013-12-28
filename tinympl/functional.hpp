@@ -44,90 +44,76 @@ template<long i> using long_= std::integral_constant<long,i>;
  * \return plus<Args...>::type is a std::integral_constant<T,v> where T is the common type between the Args::type... and v is the sum of Args::value ...
  */
 template<class ... Args> struct plus;
-template<class Head,class ... Tail> struct plus<Head,Tail...>
-{
-	typedef typename plus<Tail...>::type tail_sum;
-	typedef std::integral_constant<
-		typename std::common_type<
-			typename Head::value_type,
-			typename tail_sum::value_type>::type,
-		tail_sum::value + Head::value
-	> type;
-};
+template<class Head,class ... Tail> struct plus<Head,Tail...> : plus<Head, typename plus<Tail...>::type> {};
 
-template<class Head> struct plus<Head>
-{
-	typedef Head type;
-};
+template<class A,class B> struct plus<A,B> :
+	std::integral_constant<
+		typename std::common_type<
+			typename A::value_type,
+			typename B::value_type
+		>::type, A::value + B::value>
+{};
+
+template<class Head> struct plus<Head> : std::integral_constant<typename Head::value_type,Head::value> {};
 
 /**
  * \class multiplies Multiplies its arguments
- * \return plus<Args...>::type is a std::integral_constant<T,v> where T is the common type between the Args::type... and v is the product of Args::value ...
+ * \return multiplies<Args...>::type is a std::integral_constant<T,v> where T is the common type between the Args::type... and v is the product of Args::value ...
  */
 template<class ... Args> struct multiplies;
-template<class Head,class ... Tail> struct multiplies<Head,Tail...>
-{
-	typedef typename multiplies<Tail...>::type tail_mult;
-	typedef std::integral_constant<
-		typename std::common_type<
-			typename Head::value_type,
-			typename tail_mult::value_type>::type,
-		tail_mult::value * Head::value
-	> type;
-};
+template<class Head,class ... Tail> struct multiplies<Head,Tail...> : multiplies<Head, typename multiplies<Tail...>::type> {};
 
-template<class Head> struct multiplies<Head>
-{
-	typedef Head type;
-};
+template<class A,class B> struct multiplies<A,B> :
+	std::integral_constant<
+		typename std::common_type<
+			typename A::value_type,
+			typename B::value_type
+		>::type, A::value * B::value>
+{};
+
+template<class Head> struct multiplies<Head> : std::integral_constant<typename Head::value_type,Head::value> {};
 
 /**
  * \class minus Computes A-B where A and B are compile time constants
  * \return minus<A,B>::type is a std::integral_constant<T,v> where T is the common type between A and B, and v is A::value - B::value
  */
-template<class A,class B> struct minus
-{
-	typedef std::integral_constant<
+template<class A,class B> struct minus :
+	std::integral_constant<
 		typename std::common_type<
 			typename A::value_type,
 			typename B::value_type>::type,
-		A::value - B::value> type;
-};
+		A::value - B::value>
+{};
 
 /**
  * \class divides Computes A/B where A and B are compile time constants
  * \return divides<A,B>::type is a std::integral_constant<T,v> where T is the common type between A and B, and v is A::value / B::value
  */
-template<class A,class B> struct divides
-{
-	typedef std::integral_constant<
+template<class A,class B> struct divides :
+	std::integral_constant<
 		typename std::common_type<
 			typename A::value_type,
 			typename B::value_type>::type,
-		A::value / B::value> type;
-};
+		A::value / B::value>
+{};
 
 /**
  * \class modulus Computes A%B where A and B are compile time constants
  * \return modulus<A,B>::type is a std::integral_constant<T,v> where T is the common type between A and B, and v is A::value % B::value
  */
-template<class A,class B> struct modulus
-{
-	typedef std::integral_constant<
+template<class A,class B> struct modulus :
+	std::integral_constant<
 		typename std::common_type<
 			typename A::value_type,
 			typename B::value_type>::type,
-		A::value % B::value> type;
-};
+		A::value % B::value>
+{};
 
 /**
  * \class negate Returns the opposite of the compile time constant A
  * \return negate<A>::type is std::integral_constant<A::value_type,-A::value>
  */
-template<class A> struct negate
-{
-	typedef std::integral_constant<typename A::value_type, - A::value> type;
-};
+template<class A> struct negate : std::integral_constant<typename A::value_type, - A::value> {};
 
 /**
  * \class equal_to Determines whether the types A and B are equal
@@ -140,22 +126,30 @@ template<class A,class B> struct equal_to : std::is_same<A,B> {};
  * \class not_equal_to Determines whether the types A and B are not equal
  * \return not_equal_to<A,B>::type is a std::integral_constant<bool,v> where v is !equal_to<A,B>::value
  */
-template<class A,class B> struct not_equal_to {typedef std::integral_constant<bool,! equal_to<A,B>::value > type;};
+template<class A,class B> struct not_equal_to : std::integral_constant<bool,! equal_to<A,B>::value > {};
 
-template<class A,class B> struct greater {typedef std::integral_constant<bool, (A::value > B::value)> type;};
-template<class A,class B> struct less {typedef std::integral_constant<bool, (A::value < B::value)> type;};
-template<class A,class B> struct greater_equal {typedef std::integral_constant<bool, (A::value >= B::value)> type;};
-template<class A,class B> struct less_equal {typedef std::integral_constant<bool, (A::value <= B::value)> type;};
+template<class A,class B> struct less : std::integral_constant<bool, (A::value < B::value)> {};
+template<class A,class B> struct greater : less<B,A> {};
+template<class A,class B> struct greater_equal : negate< typename less<A,B>::type > {};
+template<class A,class B> struct less_equal : negate< typename less<B,A>::type > {};
 
-template<class ... Args> struct logical_and;
-template<class Head,class ... Tail> struct logical_and<Head,Tail...> {typedef std::integral_constant<bool, Head::value && logical_and<Tail...>::type::value> type;};
-template<class Head> struct logical_and<Head> {typedef std::integral_constant<bool,Head::value> type;};
+//Convenience logical operations which works directly on bools
+template<bool ... Args> struct and_b;
+template<bool Head,bool ... Tail> struct and_b<Head,Tail...> : std::integral_constant<bool, Head && and_b<Tail...>::value > {};
+template<bool Head> struct and_b<Head> : std::integral_constant<bool,Head> {};
 
-template<class ... Args> struct logical_or;
-template<class Head,class ... Tail> struct logical_or<Head,Tail...> {typedef std::integral_constant<bool, Head::value || logical_and<Tail...>::type::value> type;};
-template<class Head> struct logical_or<Head> {typedef std::integral_constant<bool,Head::value> type;};
+template<bool ... Args> struct or_b;
+template<bool Head,bool ... Tail> struct or_b<Head,Tail...> : std::integral_constant<bool, Head || or_b<Tail...>::value> {};
+template<bool Head> struct or_b<Head> : std::integral_constant<bool,Head> {};
 
-template<class T> struct logical_not {typedef std::integral_constant<bool,!T::value> type;};
+template<bool v> struct not_b : std::integral_constant<bool, !v> {};
+
+template<class ... Args> using logical_and = and_b<Args::value ...>;
+template<class ... Args> using and_ = logical_and<Args...>;
+template<class ... Args> using logical_or = or_b<Args::value ...>;
+template<class ... Args> using or_ = logical_or<Args...>;
+template<class T> using logical_not = not_b<T::value>;
+template<class T> using not_ = logical_not<T>;
 
 /**
  * \class identity Returns the argument passed
@@ -165,7 +159,7 @@ template<class T> struct identity {typedef T type;};
 /**
  * \class sizeof_ Returns an std::integral_constant<std::size_t,V> where V is the compile time size of the input type
  */
-template<class T> struct sizeof_ {typedef std::integral_constant<std::size_t, sizeof(T)> type;};
+template<class T> struct sizeof_ : std::integral_constant<std::size_t, sizeof(T)> {};
 
 /**
  * \class inherit Construct a type inherited from the arguments
@@ -183,10 +177,6 @@ template<class C,class A,class B> struct if_
 {
 	typedef typename std::conditional<C::value,A,B>::type type;
 };
-
-template<class ... Args> using and_ = logical_and<Args...>;
-template<class ... Args> using or_ = logical_or<Args...>;
-template<class T> using not_ = logical_not<T>;
 
 }
 
