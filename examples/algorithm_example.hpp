@@ -3,6 +3,8 @@
 
 namespace algorithm_example {
 
+using tinympl::int_;
+
 static_assert(
 	std::is_same<
 		tinympl::erase< 2,4,std::tuple<int,char,long,double,float,short> >::type,
@@ -47,6 +49,15 @@ static_assert(
 
 static_assert(
 	std::is_same<
+		tinympl::transform2<
+			std::tuple<int_<3>,int_<6>,int_<8>,int_<4> >,
+			std::tuple<int_<6>,int_<10>,int_<-2>,int_<11> >,
+			tinympl::plus>::type,
+		std::tuple< int_<9>,int_<16>,int_<6>,int_<15> >
+	>::value,"transform2");
+
+static_assert(
+	std::is_same<
 		tinympl::replace_if< std::tuple<float,int,long,double>,std::is_floating_point,int >::type,
 		std::tuple<int,int,long,int> >::value,"replace_if");
 
@@ -65,7 +76,6 @@ static_assert(
 		tinympl::remove< std::tuple<double,char,int>,char >::type,
 		std::tuple<double,int> >::value,"remove");
 
-using tinympl::int_;
 typedef std::tuple< int_<3>,int_<8>,int_<0>,int_<10> > test_list0;
 
 static_assert(tinympl::min_element<test_list0>::type::value == 2,"min_element");

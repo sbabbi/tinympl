@@ -167,6 +167,45 @@ template<class Sequence,template<class ... T> class F,template<class ... > class
 template<template<class ... T> class F,template<class ... > class Out,class ... Args> struct transform<sequence<Args...>,F,Out> : variadic::transform<F,Out,Args...> {};
 
 /**
+ * \class transform2 Transform two input sequences using a function
+ * \param Sequence1 the first input sequence
+ * \param Sequence2 the second input sequence
+ * \param F The transform function. F<T,U>::type must be a valid expression
+ * \param Out The output sequence type, defaults to the same kind of the input sequence
+ * \return transform2<...>::type is a type templated from *Out* which contains the transformed types
+ */
+template<class Sequence1,class Sequence2,template<class ...> class F,template<class ...> class Out = as_sequence<Sequence1>::template rebind> struct transform2 : transform2<as_sequence_t<Sequence1>,as_sequence_t<Sequence2>,F,Out> {};
+template<class Head1,class ... Ts1,class Head2,class ... Ts2,template<class ...> class F,template<class ...> class Out> class transform2< sequence<Head1,Ts1...>, sequence<Head2,Ts2...>,F,Out>
+{
+	template<class ... CopiedArgs>
+	struct impl
+	{
+		typedef typename transform2< sequence<Ts1...>, sequence<Ts2...>, F,Out>::template impl<CopiedArgs..., typename F<Head1,Head2>::type>::type type;
+	};
+	
+	template<class,class,template<class ...> class,template<class ...> class> friend class transform2;
+public:
+	static_assert( sizeof ... (Ts1) == sizeof ... (Ts2), "transform2: mismatching sequences size");
+	
+	typedef typename impl<>::type type;
+};
+
+template<template<class ...> class F,template<class ...> class Out> class transform2< sequence<>, sequence<>,F,Out>
+{
+	template<class ... CopiedArgs>
+	struct impl
+	{
+		typedef Out<CopiedArgs...> type;
+	};
+	
+	template<class,class,template<class ...> class,template<class ...> class> friend class transform2;
+
+public:
+	
+	typedef typename impl<>::type type;
+};
+
+/**
  * \class replace_if Replace the elements in the input sequence which satisfy a given predicate with a given type T
  * \param SequenceIn The input sequence
  * \param F The predicate, F<T>::type::value must be convertible to bool
