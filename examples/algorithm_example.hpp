@@ -23,9 +23,9 @@ static_assert(
 
 static_assert(
 	std::is_same<
-		tinympl::merge< std::tuple<char,int,long>, std::tuple<void*,char,short> >::type,
+		tinympl::join< std::tuple<char,int,long>, std::tuple<void*,char,short> >::type,
 		std::tuple<char,int,long,void*,char,short>
-	>::value,"merge");
+	>::value,"join");
 	
 static_assert(tinympl::count_if< std::tuple<int,float>,std::is_integral >::type::value == 1,"count_if");
 static_assert(tinympl::count< std::tuple<int,float,char,int>,int >::type::value == 2,"count");

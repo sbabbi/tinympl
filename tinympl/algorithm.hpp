@@ -29,16 +29,40 @@ namespace tinympl {
 /** algorithms on sequences **/
 
 /**
- * \class merge Merge a two sequences
- * \param Arg1 The first sequence
- * \param Arg2 The second sequence
+ * \class join Merge a two sequences
+ * \param Args The sequences
+ * \return A sequence constructed by joining all the passed sequences with the type of the first one
  * \param Out The output sequence type
  */
-template<class Arg1,class Arg2,template<class ...> class Out = as_sequence<Arg1>::template rebind> struct merge : merge< as_sequence_t<Arg1>, as_sequence_t<Arg2>, Out> {};
-template<class ... Args1,class ... Args2,template<class ...> class Out> struct merge< sequence<Args1...>, sequence<Args2...>,Out>
+template<class ... Args> struct join;
+template<class Head,class Next,class ... Tail> struct join<Head,Next,Tail...>
 {
-	typedef Out< Args1..., Args2...> type;
+	typedef typename join<
+	typename join<Head,Next>::type,
+		Tail...>::type type;
 };
+
+template<class Head,class Last> class join<Head,Last>
+{
+	template<class S1,class S2,template<class ...> class Out> struct do_join;
+	template<class ... S1,class ... S2,template<class ...> class Out> struct do_join< sequence<S1...>, sequence<S2...>,Out >
+	{
+		typedef Out<S1..., S2...> type;
+	};
+
+public:
+	typedef typename do_join< as_sequence_t<Head>, as_sequence_t<Last>, as_sequence<Head>::template rebind>::type type;
+};
+
+template<class Head> struct join<Head> { typedef Head type;};
+
+/**
+ * \class at Get the i-th element of a sequence
+ * \param i The index of the desired element
+ * \param Seq The input sequence
+*/
+template<std::size_t i,class Sequence> struct at : at <i, as_sequence_t<Sequence> > {};
+template<std::size_t i,class ... Args> struct at<i, sequence<Args...> > : variadic::at<i,Args...> {};
 
 /** 
  * \class insert Insert a subsequence into a given sequence at a given position
@@ -57,7 +81,7 @@ template<std::size_t pos,class ... SubSeqArgs,class ... SeqArgs,template<class..
 	typedef typename variadic::erase<0,pos,sequence,SeqArgs ... >::type tail;
 
 public:
-	typedef typename merge<head,tail,Out>::type type;
+	typedef typename join<Out<>,head,tail>::type type;
 };
 
 /**
