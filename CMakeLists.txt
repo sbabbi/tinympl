@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 project(tinympl)
 
 set (tinympl_VERSION_MAJOR 0)
-set (tinympl_VERSION_MINOR 1)
+set (tinympl_VERSION_MINOR 2)
 
 include_directories(${CMAKE_SOURCE_DIR})
 add_definitions(-std=c++11)
