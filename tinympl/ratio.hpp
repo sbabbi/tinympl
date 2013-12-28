@@ -26,47 +26,59 @@
 namespace tinympl 
 {
 
+namespace detail
+{
+//Construct a rational number by forcing a coprime representation
+template<std::intmax_t Num, std::intmax_t Den> struct make_rational
+{
+	typedef std::ratio<Num,Den> ratio_t;
+	typedef std::ratio<
+		ratio_t::num,
+		ratio_t::den> type;
+};
+}
+
 //! Compile time rational number
-template<std::intmax_t Num,std::intmax_t Den> using rational = std::ratio<Num,Den>;
+template<std::intmax_t Num,std::intmax_t Den> using rational = typename detail::make_rational<Num,Den>::type;
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct plus<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : std::ratio_add<rational<Num1,Den1>, rational<Num2,Den2> > {};
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : std::ratio_add<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct minus<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : std::ratio_subtract<rational<Num1,Den1>, rational<Num2,Den2> > {};
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : std::ratio_subtract<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct multiplies<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : std::ratio_multiply<rational<Num1,Den1>, rational<Num2,Den2> > {};
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : std::ratio_multiply<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct divides<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : std::ratio_divide<rational<Num1,Den1>, rational<Num2,Den2> > {};
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : std::ratio_divide<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
-template<std::intmax_t Num,std::intmax_t Den> struct negate<rational<Num,Den> >
+template<std::intmax_t Num,std::intmax_t Den> struct negate<std::ratio<Num,Den> >
 {
-	typedef rational<-Num,Den> type;
+	typedef std::ratio<-Num,Den> type;
 };
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct equal_to<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : 
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : 
 	std::integral_constant<bool, 
-		rational<Num1,Den1>::num == rational<Num2,Den2>::num &&
-		rational<Num1,Den1>::den == rational<Num2,Den2>::den> {};
+		std::ratio<Num1,Den1>::num == std::ratio<Num2,Den2>::num &&
+		std::ratio<Num1,Den1>::den == std::ratio<Num2,Den2>::den> {};
 
 template<std::intmax_t Num1,std::intmax_t Den1,
 		std::intmax_t Num2,std::intmax_t Den2> struct less<
-			rational<Num1,Den1>,
-			rational<Num2,Den2> > : std::ratio_less<rational<Num1,Den1>, rational<Num2,Den2> > {};
+			std::ratio<Num1,Den1>,
+			std::ratio<Num2,Den2> > : std::ratio_less<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
 }
 
