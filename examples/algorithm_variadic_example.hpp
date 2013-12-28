@@ -144,8 +144,32 @@ static_assert(
 //accumulate
 static_assert(
 	std::is_same<
-		tinympl::variadic::accumulate<int_<0>, tinympl::plus,int_<1>,int_<2>,int_<3> >::type,
+		tinympl::variadic::accumulate<tinympl::plus,int_<1>,int_<2>,int_<3> >::type,
 		int_<6> >::value,"accumulate");
+
+//left_fold
+template<class T,class U> struct tuple_push_back {typedef std::tuple<T,U> type;};
+template<class T,class ... Args> struct tuple_push_back<std::tuple<Args...>,T> { typedef std::tuple<Args...,T> type; };
+
+static_assert(
+	std::is_same<
+		tinympl::variadic::left_fold<
+			tuple_push_back,
+			int,long,char>::type,
+		std::tuple<int,long,char>
+	>::value,"left_fold");
+
+//right_fold
+template<class T,class U> struct tuple_push_front {typedef std::tuple<T,U> type;};
+template<class T,class ... Args> struct tuple_push_front<T,std::tuple<Args...> > { typedef std::tuple<T,Args...> type; };
+
+static_assert(
+	std::is_same<
+		tinympl::variadic::right_fold<
+			tuple_push_front,
+			int,long,char>::type,
+		std::tuple<int,long,char>
+	>::value,"right_fold");
 
 //all_of
 static_assert(

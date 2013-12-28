@@ -69,7 +69,7 @@ template<class ... Args> struct map
 		static_assert( variadic::all_of< is_pair, KeyValuePairs...>::type::value, "All the arguments of insert_many must be key/value pairs");
 		template<class Map,class T> using insert_one_t = typename Map::template insert<typename T::first_type, typename T::second_type>;
 		
-		typedef typename variadic::accumulate<map,insert_one_t,KeyValuePairs...>::type type;
+		typedef typename variadic::left_fold<insert_one_t,map,KeyValuePairs...>::type type;
 	};
 	
 	template<class Key>

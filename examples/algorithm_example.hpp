@@ -107,6 +107,25 @@ static_assert(
 		tinympl::unique<std::tuple<int,char,long> >::type,
 		std::tuple<int,char,long> >::type::value,"unique");
 
+template<class T,class U> struct tuple_push_back {typedef std::tuple<T,U> type;};
+template<class T,class ... Args> struct tuple_push_back<std::tuple<Args...>,T> { typedef std::tuple<Args...,T> type; };
+
+static_assert(
+	std::is_same<
+		tinympl::left_fold<std::tuple<int,long,char>,tuple_push_back >::type,
+		std::tuple<int,long,char>
+	>::value,"left_fold");
+
+//right_fold
+template<class T,class U> struct tuple_push_front {typedef std::tuple<T,U> type;};
+template<class T,class ... Args> struct tuple_push_front<T,std::tuple<Args...> > { typedef std::tuple<T,Args...> type; };
+
+static_assert(
+	std::is_same<
+		tinympl::right_fold<std::tuple<int,long,char>,tuple_push_front >::type,
+		std::tuple<int,long,char>
+	>::value,"right_fold");
+
 static_assert(
 	tinympl::all_of<std::tuple<int,long,short>,std::is_integral >::type::value == true &&
 	tinympl::all_of<std::tuple<double,int,char>,std::is_floating_point >::type::value == false,"all_of");

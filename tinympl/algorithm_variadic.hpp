@@ -56,7 +56,9 @@ template<template<class ...> class Out, class ... Args> struct reverse;
 template<class ... Args> struct is_unique;
 template<template<class ...> class Out,class ... Args> struct unique;
 
-template<class T,template<class ...> class Op,class ... Args> struct accumulate;
+template<template<class ...> class Op,class ... Args> struct left_fold;
+template<template<class ...> class Op,class ... Args> struct right_fold;
+template<template<class ...> class Op,class ... Args> using accumulate = left_fold<Op,Args...>;
 
 template< template<class ... T> class F,class ... Args> struct all_of;
 template< template<class ... T> class F,class ... Args> struct any_of;
@@ -429,18 +431,31 @@ public:
 };
 
 /**
- * accumulate
+ * left_fold
  */
-
-template<typename T,template<class ...> class Op,class Head,class ... Tail> struct accumulate<T,Op,Head,Tail...>
+template<template<class ...> class Op,class Head,class Next,class ... Tail> struct left_fold<Op,Head,Next,Tail...>
 {
-	typedef typename accumulate<
-		typename Op<T,Head>::type,
+	typedef typename left_fold<
 		Op,
+		typename Op<Head,Next>::type,
 		Tail...>::type type;
 };
 
-template<typename T,template<class ...> class Op> struct accumulate<T,Op>
+template<template<class ...> class Op,typename T> struct left_fold<Op,T>
+{
+	typedef T type;
+};
+
+/**
+ * right_fold
+ */
+template<template<class ...> class Op,class Head,class ... Tail> struct right_fold<Op,Head,Tail...>
+{
+	typedef typename Op<Head,
+		typename right_fold<Op,Tail...>::type>::type type;
+};
+
+template<template<class ...> class Op,typename T> struct right_fold<Op,T>
 {
 	typedef T type;
 };

@@ -86,7 +86,7 @@ struct value_map
 
 		template<class Map,class T> using insert_one_t = typename Map::template insert<T::first_type::value, T::second_type::value>;
 		
-		typedef typename variadic::accumulate<value_map,insert_one_t,KeyValuePairs...>::type type;
+		typedef typename variadic::left_fold<insert_one_t,value_map,KeyValuePairs...>::type type;
 	};
 	
 	template<KeyType k>
