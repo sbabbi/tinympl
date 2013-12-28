@@ -50,15 +50,6 @@ static_assert(
 		str_helloworld
 	>::value,"make_mpl_string");
 
-
-MAKE_TINYMPL_STRING(str_minus243,"-243");
-
-static_assert(
-	std::is_same<
-		str_minus243,
-		to_string_i_t<-243>
-	>::value,"to_string");
-
 MAKE_TINYMPL_STRING(str_lowor,"lowor");
 static_assert(
 	std::is_same<
@@ -79,5 +70,14 @@ MAKE_TINYMPL_STRING(str_world,"world");
 
 static_assert(str_helloworld::find<str_world>::value == 5,"string::find");
 static_assert(str_lowor::find<str_world>::value == 5,"string::find");
+
+
+MAKE_TINYMPL_STRING(str_minus243,"-243");
+
+static_assert(
+	std::is_same<
+		str_minus243,
+		to_string_i_t<-243>
+	>::value,"to_string");
 
 }
