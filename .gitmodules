@@ -1,0 +1,4 @@
+[submodule "docs/html"]
+	path = docs/html
+	url = git@github.com:sbabbi/tinympl.git
+	branch = gh-pages
