@@ -4,11 +4,8 @@
 #include "algorithm_variadic_example.hpp"
 #include "lambda_example.hpp"
 #include "map_example.hpp"
-<<<<<<< HEAD
 #include "ratio_example.hpp"
-=======
 #include "string_example.hpp"
->>>>>>> string
 #include "value_map_example.hpp"
 #include "vector_example.hpp"
 
