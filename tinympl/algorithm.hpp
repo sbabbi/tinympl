@@ -64,6 +64,13 @@ template<class Head> struct join<Head> { typedef Head type;};
 template<std::size_t i,class Sequence> struct at : at <i, as_sequence_t<Sequence> > {};
 template<std::size_t i,class ... Args> struct at<i, sequence<Args...> > : variadic::at<i,Args...> {};
 
+/**
+ * \class size Get the number of elements of a sequence
+ * \param Seq the sequence
+ */
+template<class Seq> struct size : size< as_sequence_t<Seq> > {};
+template<class ... Args> struct size<sequence<Args...> > : variadic::size<Args...> {};
+
 /** 
  * \class insert Insert a subsequence into a given sequence at a given position
  * \param pos The insertion position in the main sequence
@@ -181,6 +188,43 @@ template<std::size_t n,class T,template<class ...> class Out> struct fill_n : va
 template<std::size_t n,template<class ...> class Gen,template<class ...> class Out> struct generate_n : variadic::generate_n<n,Gen,Out> {};
 
 /**
+ * \class transpose Transpose a sequence of sequences
+ * \param SequenceOfSequences The sequence of sequences which shall be transposed
+ * \param OutOuter The type of the outer output sequence
+ * \param OutInner The type of the inner output sequence
+ */
+template<class SequenceOfSequences,
+	template<class ...> class OutOuter = as_sequence<SequenceOfSequences>::template rebind,
+	template<class ...> class OutInner = as_sequence<typename at<0,SequenceOfSequences>::type>::template rebind>
+struct transpose : transpose< as_sequence_t<SequenceOfSequences>,OutOuter,OutInner> {};
+
+template<class ... Sequences,template<class ...> class OutOuter,template<class ...> class OutInner> class transpose< sequence<Sequences...>, OutOuter,OutInner>
+{
+	static_assert(variadic::all_of<is_sequence,Sequences...>::value,"transpose: not all the elements of the main sequence are sequences");
+	static_assert(sizeof...(Sequences) > 0,"transpose is undefined on empty sequences");
+	enum {size = tinympl::size< typename variadic::at<0,Sequences...>::type>::value};
+	
+	static_assert(variadic::all_of<
+		bind<equal_to,int_<size>,
+			bind<tinympl::size,arg1> >::template eval, Sequences...>::value, "transpose: all the sequences must have the same size");
+	
+	template<std::size_t i,class ... Bound>
+	struct impl
+	{
+		typedef OutInner< typename at<i,Sequences>::type ... > cur_t;
+		typedef typename impl<i+1,Bound...,cur_t>::type type;
+	};
+	template<class ... Bound>
+	struct impl<size,Bound...>
+	{
+		typedef OutOuter<Bound...> type;
+	};
+	
+public:
+	typedef typename impl<0>::type type;
+};
+
+/**
  * \class transform Transform an input sequence using a transform function
  * \param Sequence the input sequence
  * \param F The transform function. F<T>::type must be a valid expression
@@ -191,6 +235,22 @@ template<class Sequence,template<class ... T> class F,template<class ... > class
 template<template<class ... T> class F,template<class ... > class Out,class ... Args> struct transform<sequence<Args...>,F,Out> : variadic::transform<F,Out,Args...> {};
 
 /**
+ * \class transform_many Transform many input sequences using a function
+ * \param F The transform function. F<N_Args...>::type must be a valid expression, where N is the number of input sequences
+ * \param Out The output sequence type
+ * \param Sequences... The input sequences
+ */
+template<template<class ...> class F,template<class ...> class Out,class ... Sequences> struct transform_many
+{
+	template<class Seq> using F_t = typename copy<Seq,F>::type::type;
+	
+	typedef typename transform<
+		typename transpose< sequence<Sequences...>,sequence,sequence>::type,
+		F_t,
+		Out>::type type;
+};
+
+/**
  * \class transform2 Transform two input sequences using a function
  * \param Sequence1 the first input sequence
  * \param Sequence2 the second input sequence
@@ -198,36 +258,7 @@ template<template<class ... T> class F,template<class ... > class Out,class ... 
  * \param Out The output sequence type, defaults to the same kind of the input sequence
  * \return transform2<...>::type is a type templated from *Out* which contains the transformed types
  */
-template<class Sequence1,class Sequence2,template<class ...> class F,template<class ...> class Out = as_sequence<Sequence1>::template rebind> struct transform2 : transform2<as_sequence_t<Sequence1>,as_sequence_t<Sequence2>,F,Out> {};
-template<class Head1,class ... Ts1,class Head2,class ... Ts2,template<class ...> class F,template<class ...> class Out> class transform2< sequence<Head1,Ts1...>, sequence<Head2,Ts2...>,F,Out>
-{
-	template<class ... CopiedArgs>
-	struct impl
-	{
-		typedef typename transform2< sequence<Ts1...>, sequence<Ts2...>, F,Out>::template impl<CopiedArgs..., typename F<Head1,Head2>::type>::type type;
-	};
-	
-	template<class,class,template<class ...> class,template<class ...> class> friend class transform2;
-public:
-	static_assert( sizeof ... (Ts1) == sizeof ... (Ts2), "transform2: mismatching sequences size");
-	
-	typedef typename impl<>::type type;
-};
-
-template<template<class ...> class F,template<class ...> class Out> class transform2< sequence<>, sequence<>,F,Out>
-{
-	template<class ... CopiedArgs>
-	struct impl
-	{
-		typedef Out<CopiedArgs...> type;
-	};
-	
-	template<class,class,template<class ...> class,template<class ...> class> friend class transform2;
-
-public:
-	
-	typedef typename impl<>::type type;
-};
+template<class Sequence1,class Sequence2,template<class ...> class F,template<class ...> class Out = as_sequence<Sequence1>::template rebind> using transform2 = transform_many<F,Out,Sequence1,Sequence2>;
 
 /**
  * \class replace_if Replace the elements in the input sequence which satisfy a given predicate with a given type T

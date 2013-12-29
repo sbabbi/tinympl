@@ -48,6 +48,20 @@ static_assert(
 
 static_assert(
 	std::is_same<
+		tinympl::transpose<
+			std::tuple<
+				std::tuple<int,long,char>,
+				std::tuple<float,short,double>
+			> >::type,
+		std::tuple<
+			std::tuple<int,float>,
+			std::tuple<long,short>,
+			std::tuple<char,double>
+		>
+	>::value,"transpose");
+
+static_assert(
+	std::is_same<
 		tinympl::transform< std::tuple<char,int>,std::add_const >::type,
 		std::tuple<const char,const int> >::value,"transform");
 
@@ -59,6 +73,19 @@ static_assert(
 			tinympl::plus>::type,
 		std::tuple< int_<9>,int_<16>,int_<6>,int_<15> >
 	>::value,"transform2");
+
+static_assert(
+	std::is_same<
+		tinympl::transform_many<
+			tinympl::multiplies,
+			std::tuple,
+			std::tuple<int_<3>,int_<6>,int_<8>,int_<4> >,
+			std::tuple<int_<6>,int_<10>,int_<-2>,int_<11> >,
+			std::tuple<int_<2>,int_<3>,int_<7>,int_<5> >,
+			std::tuple<int_<4>,int_<1>,int_<-4>,int_<-1> >
+		>::type,
+		std::tuple< int_<144>,int_<180>,int_<448>,int_<-220> >
+	>::value,"transform_many");
 
 static_assert(
 	std::is_same<
