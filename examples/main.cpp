@@ -4,7 +4,11 @@
 #include "algorithm_variadic_example.hpp"
 #include "lambda_example.hpp"
 #include "map_example.hpp"
+<<<<<<< HEAD
 #include "ratio_example.hpp"
+=======
+#include "string_example.hpp"
+>>>>>>> string
 #include "value_map_example.hpp"
 #include "vector_example.hpp"
 
@@ -40,9 +44,17 @@ void test_fused_value_map()
 	assert( mm.at<18>() == "string");
 }
 
+MAKE_TINYMPL_STRING(str_hello_world,"Hello World");
+
+void test_runtime_string()
+{
+	assert( str_hello_world::c_str() == std::string("Hello World") );
+}
+
 int main()
 {
 	test_fused_map();
 	test_fused_value_map();
+	test_runtime_string();
 	return 0;
 }
