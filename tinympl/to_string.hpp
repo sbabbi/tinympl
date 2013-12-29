@@ -57,20 +57,32 @@ template<class T,T value,T base> struct to_string_impl<T,value,base,
 
 }
 
+/**
+ * \ingroup String
+ * @{
+ */
+
+//! Construct a string from a given integral value of type `T`.
 template<class T,T value> using to_string = detail::to_string_impl<T,value>;
 template<class T,T value> using to_string_t = typename to_string<T,value>::type;
 
+//! Construct a string from the integer `value`
 template<int value> using to_string_i = detail::to_string_impl<int,value>;
 template<int value> using to_string_i_t = typename to_string_i<value>::type;
 
+//! Construct a string from the long integer `value`
 template<long value> using to_string_l = detail::to_string_impl<long,value>;
 template<long value> using to_string_l_t = typename to_string_l<value>::type;
 
+//! Construct a string from the unsigned integer `value`
 template<unsigned value> using to_string_u = detail::to_string_impl<unsigned,value>;
 template<unsigned value> using to_string_u_t = typename to_string_u<value>::type;
 
+//! Construct a string from the long long integer `value`
 template<long long value> using to_string_ll = detail::to_string_impl<long long,value>;
 template<long long value> using to_string_ll_t = typename to_string_ll<value>::type;
+
+/** @} */
 
 }
 

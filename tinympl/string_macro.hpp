@@ -26,22 +26,19 @@
  * \file string_macro.hpp Definition of macros to simplify the creation of a tinympl::string
  */
 
-namespace tinympl
-{
-
-template<class T>
-using make_mpl_string = typename make_basic_string<typename T::type,T::value>::type;
-
-}
-
 #define TINYMPL_STRING_JOIN2(arg1,arg2) TINYMPL_DO_STRING_JOIN2(arg1,arg2)
 #define TINYMPL_DO_STRING_JOIN2(arg1,arg2) arg1 ## arg2
 
+/**
+ * \ingroup String
+ */
+
+/**
+ * \def MAKE_TINYMPL_STRING(name,str)
+ * Define a typedef called `name` to a `tinympl::basic_string` which contains the string `str`
+*/
 #define MAKE_TINYMPL_STRING(name,str) \
-	struct TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name) { \
-		typedef char type; \
-		static constexpr const char value[] = str; \
-	}; \
-	typedef tinympl::make_mpl_string<TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name)> name
+	constexpr const char TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name) [] = str; \
+	typedef tinympl::string<TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name)> name
 
 #endif // TINYMPL_STRING_MACRO_HPP 

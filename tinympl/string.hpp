@@ -26,19 +26,52 @@
 namespace tinympl
 {
 
+/**
+ * \defgroup String Compile-time string
+ * Support for compile time strings
+ */
+
+/**
+ * \ingroup Containers String
+ * @{
+ */
+
+/**
+ * \class basic_string
+ * \brief A vector of values of type T
+ * \param T The type of the characters
+ * \param chars... The characters which compose the string
+ */
 template<class T,T ... chars>
 struct basic_string
 {	
-	enum {size = sizeof ...( chars )};
-	enum {emtpy = ( size == 0 )};
+	enum 
+	{
+		size = sizeof ... (chars) //!< The size of the vector
+	};
 	
-	typedef basic_string<T,chars...> type;
-	typedef T value_type;
+	enum 
+	{
+		emtpy = (size == 0) //!< Determine whether the vector is empty
+	};
+	
+	typedef basic_string<T,chars...> type; //!< This type
+	typedef T value_type; //!< The type of the string characters
 	typedef const T * const_pointer;
 	
+	//! Get the i-th character
+	/**
+	 * \warning If this function is called in a non-constexpr context, no out of range protection is provided
+	 */
 	constexpr static value_type at(std::size_t i) {return c_str()[i];}
+	
+	//! Return a pointer to a null-terminated C-style string
 	constexpr static const_pointer c_str() {return v_;}
+	
+	//! Return a copy of the first character
 	constexpr static value_type front() {return at(0);}
+	
+	//! Return a copy of the last character
 	constexpr static value_type back() {return at(size - 1);}
 	
 private:
@@ -50,24 +83,46 @@ private:
 
 public:
 
+	//! Return a new string constructed by inserting the string `Str` at the position `pos`.
+	/**
+	 * \sa insert_c
+	 */
 	template<std::size_t pos,class Str>
 	using insert = tinympl::insert<pos, 
 			Str,
 			basic_string<T,chars...> >;
 	
+	//! Return a new string constructed by inserting the characters `NewChars...` at the position `pos`
+	/**
+	 * \sa insert
+	 */
 	template<std::size_t pos,T ... NewChars>
 	using insert_c = insert<pos, basic_string<T,NewChars...> >;
 	
+	//! Return a new string constructed by removing `count` characters starting at position `pos`.
+	/**
+	 * \warning In order to mimic the behavior of `std::string`, this function
+	 *  takes an index and a *size* of the range, **not** a [first,last) range.
+	 */
 	template<std::size_t pos,std::size_t count>
 	using erase = tinympl::erase<pos,pos + count,
 		basic_string<T,chars...> >;
-		
+	
+	//! Return a new string constructed by appending the string `Str` at the end of this string.
+	/**
+	 * \sa append_c
+	 */
 	template<class Str>
 	using append = insert<size,Str>;
 	
+	//! Return a new string constructed by appending the characters `NewChars...` at the end of this string.
+	/**
+	 * \sa append
+	 */
 	template<T ... NewChars>
 	using append_c = insert_c<size,NewChars...>;
 	
+	//! Return a substring long `count` starting at position `pos`.
 	template<std::size_t pos, std::size_t count>
 	class substr
 	{
@@ -79,6 +134,10 @@ public:
 			typename tinympl::erase<pos+count,size, basic_string >::type>::type type;
 	};
 	
+	//! Return a new string constructed by replacing `count` characters starting at `pos` with the string `Str`.
+	/**
+	 * \sa replace_c
+	 */
 	template<std::size_t pos, std::size_t count, class Str>
 	class replace
 	{
@@ -91,9 +150,17 @@ public:
 		typedef typename str_cleared::template insert<pos,Str>::type type;
 	};
 	
+	//! Return a new string constructed by replacing `count` characters starting at `pos` with the characters `ts...`
+	/**
+	 * \sa replace
+	 */
 	template<std::size_t pos, std::size_t count, T ... ts>
 	using replace_c = replace<pos,count, basic_string<T,ts...> >;
 
+	//! Alias for \ref lexicographical_compare, mimic `std::string::compare`.
+	/**
+	 * \sa lexicographical_compare
+	 */
 	template<class OtherStr>
 	using compare = lexicographical_compare<
 		basic_string<T,chars...>,
@@ -122,25 +189,45 @@ private:
 	template<class Str> struct find_impl< Str,-1 > : std::integral_constant< std::size_t, size > {};
 
 public:
+	
+	//! Return the index of the first character of the first occurrence of the substring `Str`, or `size` if `Str` is not a substring of this string.
+	/**
+	 * \sa rfind
+	 * \sa find_c
+	 */
 	template<class Str>
 	using find = find_impl<Str,0>;
-	
+
+	//! Return the index of the first character of the last occurrence of the substring `Str`, or `size` if `Str` is not a substring of this string.
 	template<class Str>
 	using rfind = rfind_impl<Str,size>;
 	
+	//! Return the index of the first character of the first occurrence of the substring `ts...`, or `size` if `ts...` is not a substring of this string.
 	template<T ... ts> using find_c = find< basic_string<T,ts...> >;
+	
+	//! Return the index of the first character of the last occurrence of the substring `ts...`, or `size` if `ts...` is not a substring of this string.
 	template<T ... ts> using rfind_c = rfind< basic_string<T,ts...> >;
 	
 private:
 	static constexpr T v_[size + 1] = {chars ... , 0};
 };
 
+/** @} */
+
+/**
+ * \addtogroup String
+ * @{
+ */
+
 template<class T,T ... chars>
 constexpr T basic_string<T,chars...>::v_ [ size + 1];
 
-
+/**
+ * \class make_basic_string
+ * \brief Construct a \ref basic_string from a constexpr pointer to a null-terminated string.
+ */
 template<class T, const T * ptr>
-struct make_basic_string
+class make_basic_string
 {
 	template<T ... ts> struct extract
 	{
@@ -150,13 +237,25 @@ struct make_basic_string
 			extract<ts..., ptr[sizeof ... (ts) ]>
 		>::type::type type;
 	};
+public:
 	using type = typename extract<>::type;
 };
 
+//! Alias for \ref make_basic_string of `char`.
+/**
+ * Construct a \ref `basic_string <char,chars...>` with `chars...` initialized from a constexpr pointer to a null-terminated string.
+ * \param p A pointer to a constexpr null-terminated string.
+ */
 template<const char * p>
 using string = typename make_basic_string<char,p>::type;
 
-template<class T,T ... ts> struct as_sequence<basic_string<T,ts...> >
+/** @} */
+
+/**
+ * \ingroup SeqCustom
+ * \brief Customization point to allow `basic_string` to work as a tinympl sequence
+ */
+template<class T,T ... ts> class as_sequence<basic_string<T,ts...> >
 {
 	template<class ... Args>
 	struct do_rebind
@@ -170,6 +269,7 @@ template<class T,T ... ts> struct as_sequence<basic_string<T,ts...> >
 		typedef basic_string<T, Args::value ...> type;
 	};
 
+public:
 	typedef sequence< std::integral_constant<T,ts> ...> type; 
 	template<class ... Ts> using rebind = typename do_rebind<Ts...>::type;
 };
