@@ -25,29 +25,59 @@
 
 namespace tinympl {
 
+/**
+ * \defgroup SeqSupport Sequence support
+ * Basic sequences support - provides user defined customization points to define sequences.
+ * @{
+ */
+
+/**
+ * \class sequence
+ * \brief The main sequence type.
+ */
 template<class ... Args> struct sequence;
 
+/**
+ * \class as_sequence
+ * \brief Provide a customization points by allowing the user to specialize this class
+ */
 template<class T> struct as_sequence;
 
-template<class ... Args> struct as_sequence< std::tuple<Args...> > {
-	
-	typedef sequence<Args...> type; 
-	template<class ... Ts> using rebind = std::tuple<Ts...>;
-};
-
 template<class ... Args> struct as_sequence< sequence<Args...> > { 
-	
 	typedef sequence<Args...> type; 
 	template<class ... Ts> using rebind = sequence<Ts...>;
 };
 
+/**
+ * \defgroup SeqCustom Sequence customization points
+ * Allows various sequence types to be used in the sequence algorithms.
+ * @{
+ */
+
+/**
+ * \brief Customization point to allow std::tuples to work as tinympl sequences
+ */
+template<class ... Args> struct as_sequence< std::tuple<Args...> > {
+	typedef sequence<Args...> type; 
+	template<class ... Ts> using rebind = std::tuple<Ts...>;
+};
+
+/** @} */
+
+/**
+ * \brief Convenience using declaration to convert a given sequence to a `tinympl::sequence` with the same content
+ */
 template<class T> using as_sequence_t = typename as_sequence<T>::type;
 
-//Determine if a given type is a sequence
+/**
+ * \class is_sequence
+ * \brief Metafunction to determine if a given type is a sequence
+ */
 template<class T,class = void> struct is_sequence : std::false_type {};
 template<class T> struct is_sequence<T,
 	typename std::conditional<true, void, as_sequence_t<T> >::type> : std::true_type {};
 
+/** @} */
 }
 
 #endif // TINYMPL_SEQUENCE_HPP 

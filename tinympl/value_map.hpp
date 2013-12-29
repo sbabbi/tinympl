@@ -25,13 +25,34 @@
 
 namespace tinympl {
 
-//Map from value to value
+/**
+ * \ingroup Containers
+ * @{
+ */
+
+/**
+ * \class value_map
+ * \brief A compile time map from a compile-time value to another
+ * This class represents a compile time mapping between values. 
+ * The first two parameters are respectively the type of the key and of the values.
+ * The mapping is specified using `std::pair`, that is every parameter of `map` must be an 
+ * `std::pair< std::integral_constant<KeyType,key>,std::integral_constant<ValueType,value> >`
+ * 
+ * `value_map` supports standard insertion/removal and element access.
+ * \note \ref equal_to is specialized for `map`, in order to make the order in which the key/value pairs are specified irrelevant.
+ */
 template<class KeyType,class ValueType,class ... Args>
 struct value_map
 {
+	/**
+	 * \brief Determines whether `T` is a valid key type, i.e. `std::integral_constant<KeyType,KeyValue>`
+	 */
 	template<class T> struct is_valid_key_type : std::false_type {};
 	template<KeyType k> struct is_valid_key_type<std::integral_constant<KeyType,k>> : std::true_type {};
 
+	/**
+	 * \brief Determines whether `T` is a valid value type, i.e. `std::integral_constant<ValueType,Value>`
+	 */
 	template<class T> struct is_valid_value_type : std::false_type {};
 	template<ValueType k> struct is_valid_value_type<std::integral_constant<ValueType,k>> : std::true_type {};
 
@@ -40,12 +61,26 @@ struct value_map
 	static_assert( variadic::all_of< is_valid_key_type, typename Args::first_type...>::type::value, "Wrong type of key");
 	static_assert( variadic::all_of< is_valid_value_type, typename Args::second_type...>::type::value, "Wrong type of value");
 	
+	/**
+	 * \brief Convenience using-declaration to quickly define keys for this `value_map`
+	 */
 	template<KeyType k> using key = std::integral_constant<KeyType,k>;
+	
+	/**
+	 * \brief Convenience using-declaration to quickly define values for this `value_map`
+	 */
 	template<ValueType v> using value = std::integral_constant<ValueType,v>;
 	
+	/**
+	 * \brief Convenience using-declaration to quickly define a key/value pair for this `value_map`
+	 */
 	template<KeyType k,ValueType v>
 	using pair = std::pair< key<k>,value<v> >;
 	
+	/**
+	 * \class at
+	 * \brief Return the value element with the given key
+	 */
 	template<KeyType k>
 	struct at
 	{
@@ -57,17 +92,29 @@ struct value_map
 		enum {value = type::value};
 	};
 	
-	template<class ... Ts>
-	using rebind = value_map<KeyType,ValueType,Ts...>;
+	enum 
+	{
+		size = sizeof ... (Args) //!< The number of elements contained in the map
+	};
 	
-	enum {size = sizeof ... (Args)};
-	enum {empty = (size == 0)};
+	enum 
+	{
+		empty = (size == 0) //!< Determines whether the map is empty
+	};
 	
+	/**
+	 * \brief Count the number of elements in the map with a given key.
+	 * \note Since this class is a `map` and not a `multimap`, the only possible results for this operation are 0 and 1.
+	 */
 	template<KeyType k>
 	using count = std::integral_constant<
 			std::size_t,
 			(variadic::find<key<k>, typename Args::first_type ... >::type::value == size ? 0 : 1)>;
 	
+	/**
+	 * \class insert
+	 * \brief Returns a new map with the new Key/Value pair, or this map if the key is already present in the map
+	 */
 	template<KeyType k,ValueType v>
 	struct insert
 	{
@@ -77,6 +124,10 @@ struct value_map
 			value_map<KeyType,ValueType,Args...> >::type type;
 	};
 	
+	/**
+	 * \class insert_many
+	 * \brief Calls \ref insert many times to insert many Key/Value pairs
+	 */
 	template<class ... KeyValuePairs>
 	struct insert_many
 	{
@@ -89,10 +140,17 @@ struct value_map
 		typedef typename variadic::left_fold<insert_one_t,value_map,KeyValuePairs...>::type type;
 	};
 	
+	/**
+	 * \class erase
+	 * \brief Return a new map constructed by the current map removing the `k` key, if present, otherwise return the current map.
+	 */
 	template<KeyType k>
 	class erase
 	{
 		template<class T> struct key_comparer : std::is_same<typename T::first_type,key<k> > {};
+		
+		template<class ... Ts>
+		using rebind = value_map<KeyType,ValueType,Ts...>;
 
 	public:
 		typedef typename variadic::remove_if< key_comparer, rebind, Args...>::type type;

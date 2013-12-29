@@ -24,7 +24,29 @@
 
 namespace tinympl {
 
+/**
+ * \defgroup BindAndLambda Bind and Lambda expressions.
+ * Helpers to transform and define metafunction classes on the fly.
+ * @{
+ */
 
+/**
+ * \class bind
+ * \brief Produce a template type by binding the given arguments on the passed template template.
+ * 
+ * `tinympl::bind` is the compile time equivalent of `std::bind`. It produces a new template
+ * type `bind<...>::template eval` which invokes the given one (`F`) with some of its arguments bound to `Args`.
+ * Notice that in C++11 the effect of bind can be achieved with template aliases. In order to produce a cleaner
+ * code, we recommend to use template aliases wherever is possible, and use `bind` only when necessary.
+ * 
+ * `bind< std::is_same, arg1, U>::template eval` is equivalent to
+ * `template<class T> using is_same1 = std::is_same<T,U>;`
+ * 
+ * `bind` also automatically recognize bind expressions in its subarguments, so it is possible to nest multiple bind calls:
+ * 
+ * `bind< std::is_same, bind<std::remove_reference,arg1>, U>::template eval` is equivalent to
+ * `template<class T> using is_same1 = std::is_same< typename std::remove_reference<T>::type, U>;`
+ */
 template< template<class ... T> class F,class ... Args> struct bind;
 
 template<std::size_t> struct arg;
@@ -37,11 +59,20 @@ typedef arg<6> arg6;
 typedef arg<7> arg7;
 typedef arg<8> arg8;
 
+/**
+ * \brief Determine whether a type is a placeholder.
+ * `is_placeholder<T>::value` is 0 if `T` is not a placeholder, otherwise is the index of the placeholder
+ */
 template<class T> struct is_placeholder : std::false_type {};
 template<std::size_t i> struct is_placeholder< arg<i> > : std::integral_constant<std::size_t,i> {};
 
+/**
+ * \brief Determine whether a type is a bind expression.
+ */
 template<class T> struct is_bind_expression : std::false_type {};
 template<template<class ... T> class F,class ... Args> struct is_bind_expression< bind<F,Args...> > : std::true_type {};
+
+/** @} */
 
 template< template<class ... T> class F,class Head,class ... Tail> class bind<F,Head,Tail...>
 {	

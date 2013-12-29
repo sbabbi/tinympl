@@ -38,7 +38,20 @@ template<std::intmax_t Num, std::intmax_t Den> struct make_rational
 };
 }
 
-//! Compile time rational number
+/**
+ * \ingroup NewTypes
+ * @{
+ */
+
+/**
+ * \brief Convenience wrapper around `std::ratio` to automatically reduce `num` and `den` to coprime factors.
+ * 
+ * `std::is_same< std::ratio<4,2>, std::ratio<2,1> >::value` is `false`, while
+ * `std::is_same< rational<4,2>, rational<2,1> >::value` is `true`.
+ * 
+ * `rational` forwards to `std::ratio`. The comparison functionals \ref plus, \ref minus, \ref multiplies, \ref divides,
+ * \ref negate, \ref equal_to and \ref less are specialized to work transparently on `std::ratio`.
+ */
 template<std::intmax_t Num,std::intmax_t Den> using rational = typename detail::make_rational<Num,Den>::type;
 
 template<std::intmax_t Num1,std::intmax_t Den1,
@@ -80,6 +93,7 @@ template<std::intmax_t Num1,std::intmax_t Den1,
 			std::ratio<Num1,Den1>,
 			std::ratio<Num2,Den2> > : std::ratio_less<std::ratio<Num1,Den1>, std::ratio<Num2,Den2> > {};
 
+/** @} */
 }
 
 #endif // TINYMPL_RATIO_HPP 

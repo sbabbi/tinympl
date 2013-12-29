@@ -24,6 +24,12 @@
 
 namespace tinympl {
 
+/**
+ * \ingroup BindAndLambda
+ * @{
+ */
+
+
 template<class T> struct protect {typedef T type;};
 
 template<class Expr> 
@@ -69,6 +75,9 @@ template< template<class ...> class F,class ... Args> struct lambda< protect<F<A
 };
 
 template<class Expr> struct is_bind_expression<lambda<Expr> > : std::true_type {};
+
+/** @} */
+
 }
 
 #endif // TINYMPL_LAMBDA_HPP 

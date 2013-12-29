@@ -24,6 +24,9 @@
 
 namespace tinympl {
 
+/**
+ * \brief Determine whether a type is an `std::pair`
+ */
 template<class T> struct is_pair : std::false_type {};
 
 template<class FirstType,class SecondType>
@@ -33,12 +36,29 @@ struct is_pair<std::pair<FirstType,SecondType> > : std::true_type
 	typedef SecondType second_type;
 };
 
-// Map from type to type
+/**
+ * \ingroup Containers
+ * @{
+ */
+
+/**
+ * \class map
+ * \brief A compile time map from a type to another
+ * This class represents a compile time mapping between types. The mapping is specified using
+ * `std::pair`, that is every parameter of `map` must be an `std::pair<KeyType,ValueType>`.
+ * 
+ * `map` supports standard insertion/removal and element access.
+ * \note \ref equal_to is specialized for `map`, in order to make the order in which the key/value pairs are specified irrelevant.
+ */
 template<class ... Args> struct map
 {
 	static_assert( variadic::all_of< is_pair, Args...>::type::value, "All the arguments of a map must be key/value pairs");
 	static_assert( variadic::is_unique<typename Args::first_type ...>::type::value,"Duplicate keys in the map");
 	
+	/**
+	 * \class at
+	 * \brief Return the value element with the given key
+	 */
 	template<class T>
 	struct at
 	{
@@ -49,20 +69,39 @@ template<class ... Args> struct map
 		typedef typename variadic::at<index,Args...>::type::second_type type;
 	};
 	
-	enum {size = sizeof ... (Args)};
-	enum {empty = (size == 0)};
+	enum 
+	{
+		size = sizeof ... (Args) //!< The number of elements contained in the map
+	};
+
+	enum 
+	{
+		empty = (size == 0) //!< Determines whether the map is empty
+	};
 	
+	/**
+	 * \brief Count the number of elements in the map with a given key.
+	 * \note Since this class is a `map` and not a `multimap`, the only possible results for this operation are 0 and 1.
+	 */
 	template<class Key>
 	using count = std::integral_constant<
 			std::size_t,
 			(variadic::find<Key, typename Args::first_type ... >::type::value == size ? 0 : 1)>;
 	
+	/**
+	 * \class insert
+	 * \brief Returns a new map with the new Key/Value pair, or this map if the key is already present in the map
+	 */
 	template<class Key,class Value>
 	struct insert : std::conditional<
 			count<Key>::type::value == 0,
 			map<Args..., std::pair<Key,Value> >,
 			map<Args...> > {};
 	
+	/**
+	 * \class insert_many
+	 * \brief Calls \ref insert many times to insert many Key/Value pairs
+	 */
 	template<class ... KeyValuePairs>
 	struct insert_many
 	{
@@ -72,6 +111,10 @@ template<class ... Args> struct map
 		typedef typename variadic::left_fold<insert_one_t,map,KeyValuePairs...>::type type;
 	};
 	
+	/**
+	 * \class erase
+	 * \brief Return a new map constructed by the current map removing the `Key` key, if present, otherwise return the current map.
+	 */
 	template<class Key>
 	class erase
 	{
@@ -81,6 +124,8 @@ template<class ... Args> struct map
 		typedef typename variadic::remove_if< key_comparer, map, Args...>::type type;
 	};
 };
+
+/** @} */
 
 template<class ... As,class ... Bs>
 struct equal_to< map<As...>, map<Bs...> > : unordered_equal< sequence<As...>, sequence<Bs...> > {};

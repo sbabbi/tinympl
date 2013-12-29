@@ -70,12 +70,12 @@ template<std::size_t start,std::size_t end,template<class ...> class Out,class .
 
 /** @} */
 
-/**
+/*
  * size
  */
 template<class ... Args> struct size : std::integral_constant<std::size_t,sizeof...(Args)> {};
 
-/**
+/*
  * at
  */
 template<std::size_t i,class Head,class ... Tail> struct at<i,Head,Tail...>
@@ -89,7 +89,7 @@ template<class Head,class ... Tail> struct at<0,Head,Tail...>
 	typedef Head type;
 };
 
-/**
+/*
  * insert
  */
 template<std::size_t pos,class T,template<class ... > class Out,class Head,class ... Args> class insert<pos,T,Out,Head,Args...>
@@ -136,7 +136,7 @@ public:
 	typedef typename impl<>::type type;
 };
 
-/**
+/*
  * erase
  */
 template<std::size_t start,std::size_t end,template<class ...> class Out,class Head,class ... Args> class erase<start,end,Out,Head,Args...>

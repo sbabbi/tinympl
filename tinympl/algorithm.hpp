@@ -130,6 +130,7 @@ template<std::size_t first,std::size_t last,class ... Args,template<class...> cl
  * \param Sequence the input sequence
  * \param F the predicate, `F<T>::type::value` must be convertible to `bool`
  * \return `all_of<...>::type` is a `std::integral_constant<bool,v>` where `v` is true iff all the elements in the sequence satisfy the predicate `F`
+ * \sa variadic::all_of
  */
 template< class Sequence, template<class ...> class F> struct all_of : all_of<as_sequence_t<Sequence>,F> {};
 template< template<class ...> class F,class ... Args> struct all_of<sequence<Args...>,F > : variadic::all_of<F,Args...> {};
@@ -140,6 +141,7 @@ template< template<class ...> class F,class ... Args> struct all_of<sequence<Arg
  * \param Sequence the input sequence
  * \param F the predicate, `F<T>::type::value` must be convertible to `bool`
  * \return `any_of<...>::type` is a `std::integral_constant<bool,v>` where `v` is true iff at least one element in the sequence satisfy the predicate `F`
+ * \sa variadic::any_of
  */
 template< class Sequence, template<class ...> class F> struct any_of : any_of<as_sequence_t<Sequence>,F> {};
 template< template<class ...> class F,class ... Args> struct any_of<sequence<Args...>,F > : variadic::any_of<F,Args...> {};
@@ -150,6 +152,7 @@ template< template<class ...> class F,class ... Args> struct any_of<sequence<Arg
  * \param Sequence the input sequence
  * \param F the predicate, `F<T>::type::value` must be convertible to bool
  * \return `none_of<...>::type` is a `std::integral_constant<bool,v>` where `v` is true iff none of the elements in the sequence satisfy the predicate `F`
+ * \sa variadic::none_of
  */
 template< class Sequence, template<class ...> class F> struct none_of : none_of<as_sequence_t<Sequence>,F> {};
 template< template<class ...> class F,class ... Args> struct none_of<sequence<Args...>,F > : variadic::none_of<F,Args...> {};
@@ -161,6 +164,7 @@ template< template<class ...> class F,class ... Args> struct none_of<sequence<Ar
  * \param T the type to be tested.
  * \return `count<...>::type` is `std::integral_constant<std::size_t,V>` where `V` is the number of elements in the sequence equal to `T`
  * \note The comparison is done with \ref tinympl::equal_to - it can be specialized.
+ * \sa variadic::count
  */
 template<class Sequence,typename T> struct count : count<as_sequence_t<Sequence>,T > {};
 template<typename T,class ... Args> struct count<sequence<Args...>,T > : variadic::count<T,Args...> {};
@@ -171,6 +175,7 @@ template<typename T,class ... Args> struct count<sequence<Args...>,T > : variadi
  * \param Sequence The input sequence
  * \param F The predicate - `F<T>::type::value` shall be convertible to bool
  * \return `count_if<...>::type` is `std::integral_constant<std::size_t,V>` where `V` is the number of elements in the sequence which satisfy the predicate `F`.
+ * \sa variadic::count_if
  */
 template<class Sequence,template<class ... T> class F> struct count_if : count_if<as_sequence_t<Sequence>,F > {};
 template<template<class ... T> class F,class ... Args> struct count_if<sequence<Args...>,F > : variadic::count_if<F,Args...> {};
@@ -180,8 +185,9 @@ template<template<class ... T> class F,class ... Args> struct count_if<sequence<
  * \brief Compute the index of the first element in the sequence which is equal to the given type T
  * \param Sequence The input sequence
  * \param T The type to be tested
- * \return `find_if<...>::type` is `std::integral_constant<std::size_t,v>` where `v` is the 0-based index of the first element which is equal to `T`. If no such element exists, `v` is `size<Sequence>::value`.
+ * \return `find<...>::type` is `std::integral_constant<std::size_t,v>` where `v` is the 0-based index of the first element which is equal to `T`. If no such element exists, `v` is `size<Sequence>::value`.
  * \note The comparison is done with \ref tinympl::equal_to - it can be specialized
+ * \sa variadic::find
  */
 template<class Sequence,typename T> struct find : find<as_sequence_t<Sequence>,T > {};
 template<typename T,class ... Args> struct find<sequence<Args...>,T > : variadic::find<T,Args...> {};
@@ -191,6 +197,7 @@ template<typename T,class ... Args> struct find<sequence<Args...>,T > : variadic
  * \param Sequence The input sequence
  * \param F The test predicate - `F<T>::type::value` shall be convertible to bool
  * \return `find_if<...>::type` is `std::integral_constant<std::size_t,v>` where `v` is the 0-based index of the first element which satisfy `F`. If no such element exists, `v` is `size<Sequence>::value`.
+ * \sa variadic::find_if
  */
 template<class Sequence,template<class ... T> class F> struct find_if : find_if<as_sequence_t<Sequence>,F > {};
 template<template<class ... T> class F,class ... Args> struct find_if<sequence<Args...>, F> : variadic::find_if<F,Args...> {};
@@ -209,6 +216,7 @@ template<template<class ... T> class F,class ... Args> struct find_if<sequence<A
  * \param SequenceIn The input sequence
  * \param Out The output sequence type - defaults to the same sequence kind of the input sequence
  * \return `copy<...>::type` is a type templated from `Out` which is constructed with the elements of SequenceIn.
+ * \sa variadic::copy
  */
 template<class SequenceIn,template<class ...> class Out = as_sequence<SequenceIn>::template rebind> struct copy : copy<as_sequence_t<SequenceIn>,Out> {};
 template<template<class ...> class Out,class ... Args> struct copy<sequence<Args...>,Out>  : variadic::copy<Out,Args...> {};
@@ -220,6 +228,7 @@ template<template<class ...> class Out,class ... Args> struct copy<sequence<Args
  * \param F The test predicate - F<T>::type::value shall be convertible to bool
  * \param Out The output sequence type - defaults to the same sequence kind of the input sequence
  * \return `copy_if<...>::type` is a type templated from `Out` which is constructed with the elements of SequenceIn which satisfy the predicate `F`.
+ * \sa variadic::copy_if
  */
 template<class SequenceIn,template<class ... T> class F,template<class ...> class Out = as_sequence<SequenceIn>::template rebind> struct copy_if : copy_if<as_sequence_t<SequenceIn>,F,Out> {};
 template<template<class ... T> class F,template<class ...> class Out,class ... Args> struct copy_if<sequence<Args...>,F,Out>  : variadic::copy_if<F,Out,Args...> {};
@@ -231,6 +240,7 @@ template<template<class ... T> class F,template<class ...> class Out,class ... A
  * \param n The number of elements to be copied
  * \param Out The output sequence type, defaults to the same kind of the input sequence
  * \return `copy_n<...>::type` is a type templated from `Out` which is constructed with the first n types of the input sequence
+ * \sa variadic::copy_n
  */
 template<typename SequenceIn,std::size_t n,template<class ... > class Out = as_sequence<SequenceIn>::template rebind> struct copy_n : copy_n<as_sequence_t<SequenceIn>,n,Out> {};
 template<std::size_t n,template<class ...> class Out,class ... Args> struct copy_n<sequence<Args...>,n,Out> : variadic::copy_n<n,Out,Args...> {};
@@ -242,6 +252,7 @@ template<std::size_t n,template<class ...> class Out,class ... Args> struct copy
  * \param T The type of the elements
  * \param Out The output sequence type
  * \return `fill_n<...>::type` is a type templated from `Out` constructed with n types equal to `T`
+ * \sa variadic::fill_n
  */
 template<std::size_t n,class T,template<class ...> class Out> struct fill_n : variadic::fill_n<n,T,Out> {};
 
@@ -299,6 +310,7 @@ template<template<class ...> class OutSequence,template<class ...> class ZipType
  * \param F The transform function. `F<T>::type` must be a valid expression
  * \param Out The output sequence type, defaults to the same kind of the input sequence
  * \return `transform<...>::type` is a type templated from `Out` which contains the transformed types
+ * \sa variadic::transform
  */
 template<class Sequence,template<class ... T> class F,template<class ... > class Out = as_sequence<Sequence>::template rebind> struct transform : transform<as_sequence_t<Sequence>,F,Out> {};
 template<template<class ... T> class F,template<class ... > class Out,class ... Args> struct transform<sequence<Args...>,F,Out> : variadic::transform<F,Out,Args...> {};
@@ -339,6 +351,7 @@ template<class Sequence1,class Sequence2,template<class ...> class F,template<cl
  * \param Gen The generator. `Gen< std::integral_constant<int,i> >::type` must be a valid expression.
  * \param Out the output sequence type
  * \return `generate_n<...>::type` is a type templated from `Out` constructed with n elements generated with `Gen< int_<0> >, Gen< int_<1> >, ... Gen< int_<n-1> >`
+ * \sa variadic::generate_n
  */
 template<std::size_t n,template<class ...> class Gen,template<class ...> class Out> struct generate_n : variadic::generate_n<n,Gen,Out> {};
 
@@ -350,7 +363,7 @@ template<std::size_t n,template<class ...> class Gen,template<class ...> class O
  * \param Out The type of the output sequence - defaults to the same kind of the input sequence
  * \return `remove<...>::type` is a type templated from `Out` which contains the new sequence
  * \note The comparison is done with \ref tinympl::equal_to - it can be specialized
- * 
+ * \sa variadic::remove
  */
 template< class Sequence,typename T, template<class ... > class Out = as_sequence<Sequence>::template rebind> struct remove : remove<as_sequence_t<Sequence>,T,Out> {};
 template< typename T, template<class ... > class Out,class ... Args> struct remove<sequence<Args...>,T,Out> : variadic::remove<T,Out,Args...> {};
@@ -362,6 +375,7 @@ template< typename T, template<class ... > class Out,class ... Args> struct remo
  * \param F The predicate, `F<T>::type::value` must be convertible to bool
  * \param Out The output sequence type, defaults to the same kind of the input sequence
  * \return `remove_if<...>::type` is a type templated from `Out` which contains the new sequence
+ * \sa variadic::remove_if
  */
 template<class Sequence,template<class ... T> class F,template<class ...> class Out = as_sequence<Sequence>::template rebind> struct remove_if : remove_if<as_sequence_t<Sequence>,F,Out> {};
 template<template<class ... T> class F,template<class ...> class Out,class ... Args> struct remove_if<sequence<Args...>,F,Out> : variadic::remove_if<F,Out,Args...> {};
@@ -375,7 +389,7 @@ template<template<class ... T> class F,template<class ...> class Out,class ... A
  * \param Out The type of the output sequence, defaults to the same kind of the input sequence
  * \return `replace<...>::type` is a type templated from `Out`
  * \note The comparison is done with \ref tinympl::equal_to - it can be specialized
- * 
+ * \sa variadic::replace
  */
 template<class SequenceIn,class Old,class New,template<class ...> class Out = as_sequence<SequenceIn>::template rebind> struct replace : replace<as_sequence_t<SequenceIn>,Old,New,Out> {};
 template<class Old,class New,template<class ...> class Out,class ... Args> struct replace<sequence<Args...>,Old,New,Out> : variadic::replace<Old,New,Out,Args...> {};
@@ -388,6 +402,7 @@ template<class Old,class New,template<class ...> class Out,class ... Args> struc
  * \param T The type used to replace the types
  * \param Out The type of the output sequence, defaults to the same kind of the input sequence
  * \return `replace_if<...>::type` is a type templated from `Out`
+ * \sa variadic::replace_if
  */
 template<class SequenceIn,template<class ... T> class F,class T,template<class ...> class Out = as_sequence<SequenceIn>::template rebind> struct replace_if : replace_if<as_sequence_t<SequenceIn>,F,T,Out> {};
 template<template<class ... T> class F,class T,template<class ...> class Out,class ... Args> struct replace_if<sequence<Args...>,F,T,Out> : variadic::replace_if<F,T,Out,Args...> {};
@@ -398,6 +413,7 @@ template<template<class ... T> class F,class T,template<class ...> class Out,cla
  * \param Sequence the input sequence
  * \param Out the output sequence type, defaults to the same kind of the input sequence type
  * \return `reverse<...>::type` is a type templated from `Out` which contains the reversed sequence
+ * \sa variadic::reverse
  */
 template<class Sequence,template<class ...> class Out = as_sequence<Sequence>::template rebind> struct reverse : reverse< as_sequence_t<Sequence>, Out> {};
 template<template<class ...> class Out,class ... Args> struct reverse<sequence<Args...>,Out> : variadic::reverse<Out,Args...> {};
@@ -409,6 +425,7 @@ template<template<class ...> class Out,class ... Args> struct reverse<sequence<A
  * \param Out the output sequence type - defaults to the same kind of the input sequence.
  * \return `unique<...>::type` is a type templated from `Out` which contains the resulting sequence.
  * \note Only the first (leftmost) duplicate is mantained in the output sequence.
+ * \sa variadic::unique
  */
 template<class Sequence,template<class ...> class Out = as_sequence<Sequence>::template rebind> struct unique : unique<as_sequence_t<Sequence>,Out> {};
 template<template<class ...> class Out,class ... Args> struct unique< sequence<Args...>,Out> : variadic::unique<Out,Args...> {};
@@ -427,6 +444,7 @@ template<template<class ...> class Out,class ... Args> struct unique< sequence<A
  * \param Sequence the input sequence
  * \param Cmp the comparator function; `Cmp<A,B>::type::value` must be convertible to bool. Defaults to \ref tinympl::less
  * \return `min_element<...>::type` is an `std::integral_constant<std::size_t,v>` where `v` is the 0-based index of the minimum element
+ * \sa variadic::min_element
  */
 template<class Sequence,template<class ... > class Cmp = less> struct min_element : min_element<as_sequence_t<Sequence>,Cmp > {};
 template<template<class ... > class Cmp,class ... Args> struct min_element<sequence<Args...>, Cmp> : variadic::min_element<Cmp,Args...> {};
@@ -437,6 +455,7 @@ template<template<class ... > class Cmp,class ... Args> struct min_element<seque
  * \param Sequence the input sequence
  * \param Cmp the comparator function; `Cmp<A,B>::type::value` must be convertible to bool. Defaults to \ref tinympl::less
  * \return `max_element<...>::type` is an `std::integral_constant<std::size_t,v>` where `v` is the 0-based index of the maximum element
+ * \sa variadic::max_element
  */
 template<class Sequence,template<class ... > class Cmp = less> struct max_element : max_element<as_sequence_t<Sequence>,Cmp > {};
 template<template<class ... > class Cmp,class ... Args> struct max_element<sequence<Args...>,Cmp > : variadic::max_element<Cmp,Args...> {};
@@ -474,7 +493,7 @@ template<template<class ...> class Comparator> struct lexicographical_compare< s
 
 /**
  * \defgroup SeqSort Sorting operations
- * Algorithms which to sort a sequence.
+ * Algorithms to sort a sequence.
  * @{
  */
 
@@ -486,6 +505,7 @@ template<template<class ...> class Comparator> struct lexicographical_compare< s
  * \param Cmpl The comparison operator. `Cmp<A,B>::type::value` must be convertible to bool. The comparator must produce total ordering between elements. Defaults to \ref tinympl::less
  * \note The compile time complexity is O(N^2)
  * \return `sort<...>::type` is a type templated from `Out` which contains the sorted sequence
+ * \sa variadic::sort
  */
 template<class Sequence,template<class ...> class Out = as_sequence<Sequence>::template rebind,template<class ... > class Cmp = less> struct sort : sort<as_sequence_t<Sequence>,Out,Cmp> {};
 template<template<class ... > class Cmp,template<class ...> class Out,class ... Args> struct sort<sequence<Args...>,Out,Cmp> : variadic::sort<Cmp,Out,Args...> {};
@@ -574,7 +594,7 @@ template<class ... Ts,class ... Us,template<class ...> class Out> struct set_dif
  * \return `is_unique<...>::type` is a `std::integral_constant<bool,v>` where `v` is true iff the input sequence contains no duplicates
  * \note Unlike `std::sort`, the input sequence is not required to be sorted, but the compile time complexity is O(N^2)
  * \note The comparison is done with \ref tinympl::equal_to - it can be specialized
- * 
+ * \sa variadic::is_unique
  */
 template<class Sequence> struct is_unique : is_unique<as_sequence_t<Sequence> > {};
 template<class ... Args> struct is_unique<sequence<Args...> > : variadic::is_unique<Args...> {};
@@ -593,6 +613,7 @@ template<class ... Args> struct is_unique<sequence<Args...> > : variadic::is_uni
  * \param Sequence The input sequence
  * \param F The functor; `F<T,U>` must be a valid expression
  * \return A type which is the result of `F( ... F(F(A1,A2),A3) .. )`
+ * \sa variadic::left_fold
  */
 template<class Sequence,template<class ...> class F> struct left_fold : left_fold< as_sequence_t<Sequence>, F> {};
 template<class ... Ts,template<class ...> class F> struct left_fold<sequence<Ts...>, F> : variadic::left_fold<F,Ts...> {};
@@ -600,7 +621,8 @@ template<class ... Ts,template<class ...> class F> struct left_fold<sequence<Ts.
 /**
  * \class accumulate 
  * \brief Alias for left_fold.
- * \see { left_fold }
+ * \see left_fold
+ * \sa variadic::accumulate
  */
 template<class Seq,template<class ... > class F> struct accumulate : left_fold<Seq,F> {};
 
@@ -610,6 +632,7 @@ template<class Seq,template<class ... > class F> struct accumulate : left_fold<S
  * \param Sequence The input sequence
  * \param F The functor; `F<T,U>` must be a valid expression
  * \return A type which is the result of `F(A1, F(A2,F(A3, ... ) ) )`
+ * \sa variadic::right_fold
  */
 template<class Sequence,template<class ...> class F> struct right_fold : right_fold< as_sequence_t<Sequence>, F> {};
 template<class ... Ts,template<class ...> class F> struct right_fold<sequence<Ts...>, F> : variadic::right_fold<F,Ts...> {};
