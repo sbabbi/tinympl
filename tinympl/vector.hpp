@@ -1,5 +1,5 @@
 /*
- * <one line to give the program's name and a brief idea of what it does.>
+ * tinympl - mini MPL library for C++11
  * Copyright (C) 2013  Ennio Barbaro <e.barbaro@sssup.it>
  *
  * This program is free software: you can redistribute it and/or modify

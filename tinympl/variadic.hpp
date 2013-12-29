@@ -25,16 +25,50 @@
 namespace tinympl { namespace variadic {
 
 /**
- * Basic support for variadic templates
+ * \defgroup VariadicBasic Basic variadic support
+ * Basic support for variadic template sequences
+ * @{
+ */
+
+/**
+ * \class size 
+ * \brief Compute the size of a variadic template
+ * \return `size<Args...>::value` is equivalent to `sizeof ... (Args)`
  */
 template<class ... Args> struct size;
+
+/**
+ * \class at 
+ * \brief Extract the i-th element of a variadic template
+ * \param i The index to extract
+ */
 template<std::size_t i,class ... Args> struct at;
+
+/**
+ * \class insert 
+ * \brief Produce an output sequence from a variadic template inserting a new element at a given position
+ * \param pos The position of the new element
+ * \param T the new element
+ * \param Out the output sequence type
+ * \param Args... the input variadic template
+ */
 template<std::size_t pos,class T,template<class ... > class Out,class ... Args> struct insert;
+
+/**
+ * \class erase 
+ * \brief Produce an output sequence from a variadic template by removin the elements in the given range
+ * \param start The index of the first element to be removed
+ * \param end One plus the index of the last element to be removed
+ * \param Out The output sequence type
+ * \param Args... the input variadic template
+ */
 template<std::size_t start,std::size_t end,template<class ...> class Out,class ... Args> struct erase;
 
 template<class ... Args> using size_t = typename size<Args...>::type;
 template<std::size_t i,class ... Args> using at_t = typename at<i,Args...>::type;
 template<std::size_t start,std::size_t end,template<class ...> class Out,class ... Args> using erase_t = typename erase<start,end,Out,Args...>::type;
+
+/** @} */
 
 /**
  * size
