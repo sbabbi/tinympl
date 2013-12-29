@@ -39,10 +39,7 @@ template<std::size_t start,std::size_t end,template<class ...> class Out,class .
 /**
  * size
  */
-template<class ... Args> struct size
-{
-	typedef std::integral_constant<std::size_t,sizeof...(Args)> type;
-};
+template<class ... Args> struct size : std::integral_constant<std::size_t,sizeof...(Args)> {};
 
 /**
  * at
