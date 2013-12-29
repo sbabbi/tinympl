@@ -121,6 +121,9 @@ template<class A> struct negate : std::integral_constant<typename A::value_type,
  * \note The default behaviour is to forward the call to std::is_same. Users are allowed to specialize this metafunction for user-defined types
  */
 template<class A,class B> struct equal_to : std::is_same<A,B> {};
+template<class T,class U,T t,U u> struct equal_to<
+	std::integral_constant<T,t>,
+	std::integral_constant<U,u> > : std::integral_constant<bool,t ==u> {};
 
 /**
  * \class not_equal_to Determines whether the types A and B are not equal
