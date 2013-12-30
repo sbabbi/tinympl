@@ -26,6 +26,8 @@ set(TINYMPL_HEADERS
 add_library(tinympl STATIC ${TINYMPL_HEADERS})
 set_target_properties(tinympl PROPERTIES LINKER_LANGUAGE CXX)
 
+configure_file(Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
+
 install(DIRECTORY tinympl DESTINATION include)
 
 add_definitions(-std=c++11)
