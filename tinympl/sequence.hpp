@@ -43,11 +43,6 @@ template<class ... Args> struct sequence;
  */
 template<class T> struct as_sequence;
 
-template<class ... Args> struct as_sequence< sequence<Args...> > { 
-	typedef sequence<Args...> type; 
-	template<class ... Ts> using rebind = sequence<Ts...>;
-};
-
 /**
  * \defgroup SeqCustom Sequence customization points
  * Allows various sequence types to be used in the sequence algorithms.
@@ -55,11 +50,11 @@ template<class ... Args> struct as_sequence< sequence<Args...> > {
  */
 
 /**
- * \brief Customization point to allow std::tuples to work as tinympl sequences
+ * \brief Customization point to allow any variadic template type to work with tinympl
  */
-template<class ... Args> struct as_sequence< std::tuple<Args...> > {
+template<class ... Args,template<class ...> class Seq> struct as_sequence< Seq<Args...> > {
 	typedef sequence<Args...> type; 
-	template<class ... Ts> using rebind = std::tuple<Ts...>;
+	template<class ... Ts> using rebind = Seq<Ts...>;
 };
 
 /** @} */
