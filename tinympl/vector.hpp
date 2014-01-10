@@ -40,7 +40,7 @@ struct vector
 	
 	enum 
 	{
-		emtpy = (size == 0) //!< Determine whether the vector is empty
+		empty = (size == 0) //!< Determine whether the vector is empty
 	};
 	
 	//! Access the i-th element

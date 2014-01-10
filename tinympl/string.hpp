@@ -45,7 +45,7 @@ struct basic_string
 	
 	enum 
 	{
-		emtpy = (size == 0) //!< Determine whether the vector is empty
+		empty = (size == 0) //!< Determine whether the vector is empty
 	};
 	
 	typedef basic_string<T,chars...> type; //!< This type
