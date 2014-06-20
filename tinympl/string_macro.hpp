@@ -13,7 +13,7 @@
 #ifndef TINYMPL_STRING_MACRO_HPP
 #define TINYMPL_STRING_MACRO_HPP
 
-#include "string.hpp"
+#include <tinympl/string.hpp>
 
 /**
  * \file string_macro.hpp Definition of macros to simplify the creation of a tinympl::string
@@ -34,4 +34,4 @@
 	constexpr const char TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name) [] = str; \
 	typedef tinympl::string<TINYMPL_STRING_JOIN2(tinympl_string_temporary_, name)> name
 
-#endif // TINYMPL_STRING_MACRO_HPP 
+#endif // TINYMPL_STRING_MACRO_HPP
