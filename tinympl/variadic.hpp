@@ -85,15 +85,16 @@ template<class Head,class ... Tail> struct at<0,Head,Tail...>
 /*
  * insert
  */
-template<std::size_t pos,class T,template<class ... > class Out,class Head,class ... Args> class insert<pos,T,Out,Head,Args...>
+template<std::size_t pos,class T,template<class ... > class Out,class Head,class ... Args> struct insert<pos,T,Out,Head,Args...>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef typename insert<pos-1,T,Out,Args...>::template impl<CopiedElements...,Head>::type type;
 	};
 	
-	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	template<std::size_t,class,template<class ... > class,class ...> friend struct insert;
 	
 public:
 	static_assert(pos <= sizeof ... (Args) + 1,"pos > sequence size!");
@@ -101,29 +102,31 @@ public:
 	typedef typename impl<>::type type;
 };
 
-template<class T,template<class ... > class Out,class Head,class ... Args> class insert<0,T,Out,Head,Args...>
+template<class T,template<class ... > class Out,class Head,class ... Args> struct insert<0,T,Out,Head,Args...>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef Out< CopiedElements ..., T, Head,Args ... > type;
 	};
 	
-	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	template<std::size_t,class,template<class ... > class,class ...> friend struct insert;
 	
 public:
 	typedef typename impl<>::type type;
 };
 
-template<class T,template<class ... > class Out> class insert<0,T,Out>
+template<class T,template<class ... > class Out> struct insert<0,T,Out>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef Out< CopiedElements ..., T > type;
 	};
 	
-	template<std::size_t,class,template<class ... > class,class ...> friend class insert;
+	template<std::size_t,class,template<class ... > class,class ...> friend struct insert;
 	
 public:
 	typedef typename impl<>::type type;
@@ -132,15 +135,16 @@ public:
 /*
  * erase
  */
-template<std::size_t start,std::size_t end,template<class ...> class Out,class Head,class ... Args> class erase<start,end,Out,Head,Args...>
+template<std::size_t start,std::size_t end,template<class ...> class Out,class Head,class ... Args> struct erase<start,end,Out,Head,Args...>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef typename erase<start-1,end-1,Out,Args...>::template impl<CopiedElements...,Head>::type type;
 	};
 	
-	template<std::size_t,std::size_t,template<class ...> class,class ...> friend class erase;
+	template<std::size_t,std::size_t,template<class ...> class,class ...> friend struct erase;
 	
 public:
 	static_assert(start <= end,"Start > end!");
@@ -148,7 +152,7 @@ public:
 	typedef typename impl<>::type type;
 };
 
-template<std::size_t end,template<class ...> class Out,class Head,class ... Args> class erase<0,end,Out,Head,Args...>
+template<std::size_t end,template<class ...> class Out,class Head,class ... Args> struct erase<0,end,Out,Head,Args...>
 {
 	template<class ... CopiedElements>
 	struct impl
@@ -156,35 +160,37 @@ template<std::size_t end,template<class ...> class Out,class Head,class ... Args
 		typedef typename erase<0,end-1,Out,Args...>::template impl<CopiedElements...>::type type;
 	};
 	
-	template<std::size_t,std::size_t,template<class ...> class,class ...> friend class erase;
+	template<std::size_t,std::size_t,template<class ...> class,class ...> friend struct erase;
 	
 public:
 	typedef typename impl<>::type type;
 };
 
-template<template<class ...> class Out,class Head,class ... Args> class erase<0,0,Out,Head,Args...>
+template<template<class ...> class Out,class Head,class ... Args> struct erase<0,0,Out,Head,Args...>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef Out<CopiedElements..., Head,Args...> type;
 	};
 	
-	template<std::size_t,std::size_t,template<class ...> class,class ...> friend class erase;
+	template<std::size_t,std::size_t,template<class ...> class,class ...> friend struct erase;
 	
 public:
 	typedef typename impl<>::type type;
 };
 
-template<template<class ...> class Out> class erase<0,0,Out>
+template<template<class ...> class Out> struct erase<0,0,Out>
 {
+private:
 	template<class ... CopiedElements>
 	struct impl
 	{
 		typedef Out<CopiedElements...> type;
 	};
 	
-	template<std::size_t,std::size_t,template<class ...> class,class ...> friend class erase;
+	template<std::size_t,std::size_t,template<class ...> class,class ...> friend struct erase;
 	
 public:
 	typedef typename impl<>::type type;

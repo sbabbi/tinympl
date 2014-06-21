@@ -46,7 +46,8 @@ struct join<Head, Next, Tail...> {
         typename join < typename join<Head, Next>::type, Tail... >::type type;
 };
 
-template<class Head, class Last> class join<Head, Last> {
+template<class Head, class Last> struct join<Head, Last> {
+private:
     template<class S1, class S2, template<class ...> class Out> struct do_join;
 
     template<class ... S1, class ... S2, template<class ...> class Out>
@@ -769,7 +770,8 @@ namespace detail {
 template<class SequenceA, class SequenceB> struct unordered_equal_impl;
 
 template<class ... As, class ... Bs> 
-class unordered_equal_impl<sequence<As...>, sequence<Bs...> > {
+struct unordered_equal_impl<sequence<As...>, sequence<Bs...> > {
+private:
     template<class T> 
     struct check_t {
         typedef std::integral_constant < bool,

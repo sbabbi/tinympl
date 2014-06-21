@@ -533,8 +533,8 @@ template<template<class ... T> class F,
         template<class ...> class Out, 
         class Head,
         class ... Tail> 
-class copy_if<F, Out, Head, Tail...> {
-
+struct copy_if<F, Out, Head, Tail...> {
+private:
     template<class ... CopiedElements> 
     struct impl {
         template<class ... Args> 
@@ -549,21 +549,22 @@ class copy_if<F, Out, Head, Tail...> {
 
     template<template<class ... T> class,
             template<class ...> class,
-            class ...> friend class copy_if;
+            class ...> friend struct copy_if;
 
 public:
     typedef typename impl<>::type type;
 };
 
 template<template<class ... T> class F, template<class ...> class Out> 
-class copy_if<F, Out> {
+struct copy_if<F, Out> {
+private:
     template<class ... CopiedElements> 
     struct impl {
         typedef Out<CopiedElements...> type;
     };
 
     template<template<class ... T> class, template<class ...> class, class ...> 
-    friend class copy_if;
+    friend struct copy_if;
 
 public:
     typedef typename impl<>::type type;
@@ -575,15 +576,15 @@ public:
 template<std::size_t n,
         template<class ...> class Out,
         class Head, class ... Tail> 
-class copy_n<n, Out, Head, Tail...> {
-    
+struct copy_n<n, Out, Head, Tail...> {
+private:
     template<class ... CopiedElements> struct impl {
         typedef typename copy_n < n - 1, Out, Tail... >::template 
             impl<CopiedElements..., Head>::type type;
     };
 
     template<std::size_t, template<class ...> class, class ...> 
-    friend class copy_n;
+    friend struct copy_n;
 
 public:
     static_assert( n <= 1 + sizeof...( Tail ), "n overflow" );
@@ -591,25 +592,27 @@ public:
 };
 
 template<template<class ...> class Out, class Head, class ... Tail> 
-class copy_n<0, Out, Head, Tail...> {
+struct copy_n<0, Out, Head, Tail...> {
+private:
     template<class ... CopiedElements> struct impl {
         typedef Out<CopiedElements...> type;
     };
 
     template<std::size_t, template<class ...> class, class ...> 
-    friend class copy_n;
+    friend struct copy_n;
 
 public:
     typedef typename impl<>::type type;
 };
 
-template<template<class ...> class Out> class copy_n<0, Out> {
+template<template<class ...> class Out> struct copy_n<0, Out> {
+private:
     template<class ... CopiedElements> struct impl {
         typedef Out<CopiedElements...> type;
     };
 
     template<std::size_t, template<class ...> class, class ...> 
-    friend class copy_n;
+    friend struct copy_n;
 
 public:
     typedef typename impl<>::type type;
@@ -695,7 +698,7 @@ template<template<class ... T> class F,
         template<class ...> class Out,
         class Head,
         class ... Tail> 
-class replace_if<F, T, Out, Head, Tail...> {
+struct replace_if<F, T, Out, Head, Tail...> {
     
     template<class ... CopiedElements>
     struct impl {
@@ -712,14 +715,15 @@ class replace_if<F, T, Out, Head, Tail...> {
         template<class ...> class,
         typename,
         template<class...> class, 
-        class ...> friend class replace_if;
+        class ...> friend struct replace_if;
 
 public:
     typedef typename impl<>::type type;
 };
 
 template<template<class ... T> class F, class T, template<class ...> class Out> 
-class replace_if<F, T, Out> {
+struct replace_if<F, T, Out> {
+private:
     template<class ... CopiedElements>
     struct impl {
         typedef Out<CopiedElements...> type;
@@ -728,7 +732,7 @@ class replace_if<F, T, Out> {
     template<template<class ...> class,
             typename,
             template<class...> class, 
-            class ...> friend class replace_if;
+            class ...> friend struct replace_if;
 
 public:
     typedef typename impl<>::type type;
@@ -738,26 +742,28 @@ public:
  * reverse
  */
 template<template<class ...> class Out, class Head, class ... Tail>
-class reverse<Out, Head, Tail...> {
+struct reverse<Out, Head, Tail...> {
+private:
     template<class ... ReversedTail>
     struct impl {
         typedef typename reverse<Out, Tail...>::template 
             impl<Head, ReversedTail...>::type type;
     };
 
-    template<template<class ...> class, class ...> friend class reverse;
+    template<template<class ...> class, class ...> friend struct reverse;
 
 public:
     typedef typename impl<>::type type;
 };
 
-template<template<class ...> class Out> class reverse<Out> {
+template<template<class ...> class Out> struct reverse<Out> {
+private:
     template<class ... ReversedTail>
     struct impl {
         typedef Out<ReversedTail...> type;
     };
 
-    template<template<class ...> class, class ...> friend class reverse;
+    template<template<class ...> class, class ...> friend struct reverse;
 
 public:
     typedef Out<> type;
@@ -767,7 +773,8 @@ public:
  * unique
  */
 template<template<class ...> class Out, class Head, class ... Tail>
-class unique<Out, Head, Tail...> {
+struct unique<Out, Head, Tail...> {
+private:
     template<class ... Ts>
     struct impl {
         template<class ... Us> using next = unique<Out, Us...>;
@@ -775,20 +782,21 @@ class unique<Out, Head, Tail...> {
             template impl<Ts..., Head>::type type;
     };
 
-    template<template<class...> class, class...> friend class unique;
+    template<template<class...> class, class...> friend struct unique;
 
 public:
     typedef typename impl<>::type type;
 
 };
 
-template<template<class ...> class Out> class unique<Out> {
+template<template<class ...> class Out> struct unique<Out> {
+private:
     template<class ... Ts>
     struct impl {
         typedef Out<Ts...> type;
     };
 
-    template<template<class...> class, class...> friend class unique;
+    template<template<class...> class, class...> friend struct unique;
 
 public:
     typedef typename impl<>::type type;
@@ -814,8 +822,9 @@ public:
               next_min + 1 ) > type;
 };
 
-template<template<class ... > class Comp, class Head> struct 
+template<template<class ... > class Comp, class Head> class 
 min_element_impl<Comp, Head> {
+public:
     typedef std::integral_constant<std::size_t, 0> type;
 };
 

@@ -266,6 +266,18 @@ template<class C,class A,class B> struct if_
 	typedef typename std::conditional<C::value,A,B>::type type;
 };
 
+/**
+ * \class apply
+ * \brief Return the result type of the metafunction class F called with arguments Args.,,
+ */
+template<class F,class ... Args> struct apply
+{
+	typedef typename F::template eval<Args...>::type type;
+};
+
+template<class F,class ... Args>
+using apply_t = typename apply<F,Args...>::type;
+
 /** @} */
 
 }

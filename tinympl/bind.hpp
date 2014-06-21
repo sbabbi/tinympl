@@ -67,8 +67,9 @@ template<template<class ... T> class F,class ... Args> struct is_bind_expression
 
 /** @} */
 
-template< template<class ... T> class F,class Head,class ... Tail> class bind<F,Head,Tail...>
-{	
+template< template<class ... T> class F,class Head,class ... Tail> struct bind<F,Head,Tail...>
+{
+private:
 	template<class ... Args>
 	struct call
 	{
@@ -86,7 +87,7 @@ template< template<class ... T> class F,class Head,class ... Tail> class bind<F,
 		};
 	};
 	
-	template< template<class ...> class,class ...> friend class bind;
+	template< template<class ...> class,class ...> friend struct bind;
 
 public:
 	template<class ... Args>
@@ -99,8 +100,9 @@ public:
 	using eval_t = typename eval<Args...>::type;
 };
 
-template< template<class ... T> class F> class bind<F>
+template< template<class ... T> class F> struct bind<F>
 {
+private:
 	template<class ... Args>
 	struct call
 	{
@@ -111,7 +113,7 @@ template< template<class ... T> class F> class bind<F>
 		};
 	};
 	
-	template< template<class ...> class,class ...> friend class bind;
+	template< template<class ...> class,class ...> friend struct bind;
 
 public:
 	template<class ... Args>
