@@ -56,8 +56,11 @@ typedef arg<8> arg8;
  * \brief Determine whether a type is a placeholder.
  * `is_placeholder<T>::value` is 0 if `T` is not a placeholder, otherwise is the index of the placeholder
  */
-template<class T> struct is_placeholder : std::false_type {};
-template<std::size_t i> struct is_placeholder< arg<i> > : std::integral_constant<std::size_t,i> {};
+template<class T> struct is_placeholder : std::integral_constant<std::size_t, 0> {};
+template<std::size_t i> struct is_placeholder< arg<i> > : std::integral_constant<std::size_t, i> 
+{
+	static_assert(i != 0, "Placeholder arg<0> is undefined");
+};
 
 /**
  * \brief Determine whether a type is a bind expression.
@@ -77,7 +80,7 @@ private:
 		struct eval
 		{
 			template<class T,class Enable = void> struct pick {typedef T type;};
-			template<class T> struct pick<T, typename std::enable_if< is_placeholder<T>::type::value>::type> {typedef variadic::at_t<is_placeholder<T>::value-1, Args ... > type;};
+			template<class T> struct pick<T, typename std::enable_if< (is_placeholder<T>::value > 0) >::type> {typedef variadic::at_t<is_placeholder<T>::value-1, Args ... > type;};
 			template<class T> struct pick<T, typename std::enable_if< is_bind_expression<T>::type::value>::type> {typedef typename T::template eval<Args...>::type type;};
 			
 			typedef typename pick<Head>::type argument_t;

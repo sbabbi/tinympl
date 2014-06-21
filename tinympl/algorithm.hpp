@@ -378,16 +378,17 @@ class transpose< sequence<Sequences...>, OutOuter, OutInner> {
     template<std::size_t i, class ... Bound>
     struct impl {
         typedef OutInner< typename at<i, Sequences>::type ... > cur_t;
-        typedef typename impl < i + 1, Bound..., cur_t >::type type;
+        typedef typename impl < i - 1, cur_t, Bound... >::type type;
     };
 
     template<class ... Bound>
-    struct impl<size, Bound...> {
-        typedef OutOuter<Bound...> type;
+    struct impl<0, Bound...> {
+	typedef OutInner< typename at<0, Sequences>::type ... > cur_t;
+        typedef OutOuter<cur_t, Bound...> type;
     };
 
 public:
-    typedef typename impl<0>::type type;
+    typedef typename impl< size-1 >::type type;
 };
 
 /**
