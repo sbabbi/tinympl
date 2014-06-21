@@ -13,6 +13,7 @@
 #ifndef TINYMPL_RATIO_HPP
 #define TINYMPL_RATIO_HPP
 
+#include <cstdint>
 #include <ratio>
 #include <tinympl/functional.hpp>
 

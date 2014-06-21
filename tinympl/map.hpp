@@ -13,7 +13,15 @@
 #ifndef TINYMPL_MAP_HPP
 #define TINYMPL_MAP_HPP
 
-#include <tinympl/algorithm.hpp>
+#include <tinympl/equal_to.hpp>
+#include <tinympl/variadic/all_of.hpp>
+#include <tinympl/variadic/is_unique.hpp>
+#include <tinympl/variadic/find.hpp>
+#include <tinympl/variadic/at.hpp>
+#include <tinympl/variadic/left_fold.hpp>
+#include <tinympl/variadic/remove_if.hpp>
+#include <tinympl/unordered_equal.hpp>
+#include <tinympl/sequence.hpp>
 
 namespace tinympl {
 

@@ -24,11 +24,11 @@ namespace variadic {
  * \brief Extract the i-th element of a variadic template
  * \param i The index to extract
  */
-template<std::size_t i,class ... Args> struct at;
+template<int i,class ... Args> struct at;
 
-template<std::size_t i,class ... Args> using at_t = typename at<i,Args...>::type;
+template<int i,class ... Args> using at_t = typename at<i,Args...>::type;
 
-template<std::size_t i,class Head,class ... Tail> struct at<i,Head,Tail...>
+template<int i,class Head,class ... Tail> struct at<i,Head,Tail...>
 {
 	static_assert(i < sizeof ... (Tail) + 1,"Index out of range");
 	typedef typename at<i-1,Tail...>::type type;

@@ -33,7 +33,7 @@ struct lambda
 	struct eval
 	{
 		template<class T,class Enable = void> struct pick {typedef T type;};
-		template<class T> struct pick<T, typename std::enable_if< is_placeholder<T>::type::value>::type> {typedef variadic::at_t<is_placeholder<T>::value-1, Ts ... > type;};
+		template<class T> struct pick<T, typename std::enable_if< (is_placeholder<T>::type::value > 0)>::type> {typedef variadic::at_t<is_placeholder<T>::value-1, Ts ... > type;};
 		template<class T> struct pick<T, typename std::enable_if< is_bind_expression<T>::type::value>::type> {typedef typename T::template eval<Ts...>::type type;};
 
 		typedef typename pick<Expr>::type type;

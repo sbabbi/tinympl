@@ -163,14 +163,14 @@ private:
 	template<std::size_t i,std::size_t count>
 	using unguarded_substr = substr<i, (i+count <= size ? count : size - i)>;
 
-	template<class Str,std::size_t i> struct find_impl :
+	template<class Str, int i, std::size_t s> struct find_impl :
 		std::conditional<
 			unguarded_substr<i,Str::size>::type::template
 				compare<Str>::value == 0,
-			std::integral_constant<std::size_t, i>,
-			find_impl<Str,i+1> >::type {};
+			std::integral_constant<int, i>,
+			find_impl<Str,i+1,s> >::type {};
 
-	template<class Str> struct find_impl< Str,size > : std::integral_constant< std::size_t, size > {};
+	template<class Str, int s> struct find_impl<Str, s, s> : std::integral_constant<std::size_t, s> {};
 
 	template<class Str,int i> struct rfind_impl :
 		std::conditional<
@@ -179,7 +179,7 @@ private:
 			std::integral_constant<std::size_t, i>,
 			rfind_impl<Str,i-1> >::type {};
 
-	template<class Str> struct find_impl< Str,-1 > : std::integral_constant< std::size_t, size > {};
+	template<class Str, std::size_t s> struct find_impl< Str, -1, s> : std::integral_constant< std::size_t, s> {};
 
 public:
 
@@ -189,7 +189,7 @@ public:
 	 * \sa find_c
 	 */
 	template<class Str>
-	using find = find_impl<Str,0>;
+	using find = find_impl<Str,0,size>;
 
 	//! Return the index of the first character of the last occurrence of the substring `Str`, or `size` if `Str` is not a substring of this string.
 	template<class Str>
