@@ -13,9 +13,6 @@
 #ifndef TINYMPL_SEQUENCE_HPP
 #define TINYMPL_SEQUENCE_HPP
 
-#include <tuple>
-#include <tinympl/variadic.hpp>
-
 namespace tinympl {
 
 /**

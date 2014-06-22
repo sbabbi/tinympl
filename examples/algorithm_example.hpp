@@ -1,5 +1,6 @@
 
 #include <tinympl/algorithm.hpp>
+#include <tuple>
 
 namespace algorithm_example {
 

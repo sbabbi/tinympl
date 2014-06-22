@@ -22,6 +22,8 @@
 #include <tinympl/variadic/remove_if.hpp>
 #include <tinympl/unordered_equal.hpp>
 #include <tinympl/sequence.hpp>
+#include <type_traits>
+#include <utility>
 
 namespace tinympl {
 
