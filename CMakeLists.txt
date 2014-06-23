@@ -14,6 +14,7 @@ set(TINYMPL_HEADERS
        tinympl/algorithm_variadic.hpp
        tinympl/all_of.hpp
        tinympl/any_of.hpp
+       tinympl/apply.hpp
        tinympl/at.hpp
        tinympl/bind.hpp
        tinympl/copy.hpp
@@ -88,6 +89,7 @@ add_executable(test/test_tinympl
        test/tinympl/and_b.cpp
        test/tinympl/any_of.cpp
        test/tinympl/as_sequence.cpp
+       test/tinympl/apply.cpp
        test/tinympl/at.cpp
        test/tinympl/bind.cpp
        test/tinympl/bool.cpp
