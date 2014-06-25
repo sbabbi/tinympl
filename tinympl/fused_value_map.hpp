@@ -14,7 +14,7 @@
 #define TINYMPL_FUSED_VALUE_MAP_HPP
 
 #include <algorithm>
-#include "algorithm_variadic.hpp"
+#include <tinympl/algorithm_variadic.hpp>
 
 namespace tinympl {
 
@@ -22,7 +22,7 @@ template<class KeyType,class ValueType,KeyType... Keys>
 struct fused_value_map
 {
 	static_assert( variadic::is_unique< std::integral_constant<KeyType,Keys>...>::type::value,"There are duplicate keys");
-	
+
 	typedef ValueType value_type;
 	typedef value_type* pointer;
 	typedef const value_type* const_pointer;
@@ -34,16 +34,16 @@ struct fused_value_map
 	typedef std::ptrdiff_t difference_type;
 	typedef std::reverse_iterator<iterator> reverse_iterator;
 	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-	
+
 	// Capacity.
 	static constexpr size_type size() noexcept { return sizeof ... (Keys); }
 	static constexpr size_type max_size() { return size(); }
 	static constexpr bool empty() noexcept { return size() == 0; }
-	
+
 	void fill(const value_type& __u) { std::fill_n(begin(), size(), __u); }
 	void swap(fused_value_map& __other) noexcept(noexcept(swap(std::declval<reference>(), std::declval<reference>())))
 	{ std::swap_ranges(begin(), end(), __other.begin()); }
-	
+
 	iterator begin() noexcept
 	{ return iterator(data()); }
 
@@ -79,7 +79,7 @@ struct fused_value_map
 
 	const_reverse_iterator crend() const noexcept
 	{ return const_reverse_iterator(begin()); }
-	
+
 	template<KeyType k>
 	reference at() {
 		enum {value = variadic::find<
@@ -88,7 +88,7 @@ struct fused_value_map
 		static_assert( value < size(), "Key not present in map");
 		return elems_[value];
 	}
-	
+
 	template<KeyType k>
 	const_reference at() const {
 		enum {value = variadic::find<
@@ -100,12 +100,12 @@ struct fused_value_map
 
 	pointer data() noexcept { return std::addressof( elems_[0] ); }
 	const_pointer data() const noexcept { return std::addressof( elems_[0] ); }
-	
+
 	value_type elems_[ size() > 0 ? size() : 1 ];
-	
+
 	inline friend bool operator==(const fused_value_map & lhs, const fused_value_map & rhs)
     { return std::equal(lhs.begin(), lhs.end(), rhs.begin()); }
-    
+
     inline friend bool operator!=(const fused_value_map & lhs, const fused_value_map & rhs)
     { return !(lhs == rhs); }
 
@@ -113,14 +113,14 @@ struct fused_value_map
 	{ return std::lexicographical_compare(lhs.begin(), lhs.end(),rhs.begin(), rhs.end()); }
 	inline friend bool operator>(const fused_value_map & lhs, const fused_value_map & rhs)
 	{ return rhs < lhs; }
-	
+
 	inline friend bool operator<=(const fused_value_map & lhs,const fused_value_map & rhs)
 	{ return !(lhs > rhs); }
-	
+
 	inline friend bool operator>=(const fused_value_map & lhs,const fused_value_map & rhs)
 	{ return !(lhs < rhs); }
 };
 
 }
 
-#endif // TINYMPL_FUSED_VALUE_MAP_HPP 
+#endif // TINYMPL_FUSED_VALUE_MAP_HPP

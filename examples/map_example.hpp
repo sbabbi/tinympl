@@ -1,5 +1,7 @@
 
 #include <tinympl/map.hpp>
+#include <tinympl/int.hpp>
+#include <tinympl/char.hpp>
 
 namespace map_example {
 

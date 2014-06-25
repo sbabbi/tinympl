@@ -22,7 +22,7 @@ template<bool b,class U> using myf2 = lambda<
 		protect<std::vector<arg2> >,
 		protect<std::vector<int> > >
 	>::template eval_t<bool_<b>,U>;
-	
+
 static_assert( std::is_same<
 					myf2<true, char>,
 					std::vector<char>
@@ -31,5 +31,4 @@ static_assert( std::is_same<
 					myf2<false,char>,
 					std::vector<int>
 				>::value,"lambda");
-
 }

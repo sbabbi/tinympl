@@ -13,8 +13,10 @@
 #ifndef TINYMPL_FUSED_MAP_HPP
 #define TINYMPL_FUSED_MAP_HPP
 
+#include <tinympl/variadic/all_of.hpp>
+#include <tinympl/variadic/is_unique.hpp>
+#include <tinympl/map.hpp>
 #include <algorithm>
-#include "map.hpp"
 
 namespace tinympl {
 
@@ -26,21 +28,21 @@ struct fused_map : std::tuple<typename KeyValuePairs::second_type ... >
 
 	typedef std::tuple<typename KeyValuePairs::second_type ... > base_type;
 	typedef map<KeyValuePairs...> map_type;
-	
+
 	using base_type::base_type;
-	
+
 	template<class Key>
 	typename map_type::template at<Key>::type & at()
 	{
 		return std::get< map_type::template at<Key>::index >(*this);
 	}
-	
+
 	template<class Key>
 	typename map_type::template at<Key>::type const & at() const
 	{
 		return std::get< map_type::template at<Key>::index >(*this);
 	}
-		
+
 	enum {size = map_type::size};
 	enum {empty = map_type::empty};
 
@@ -50,4 +52,4 @@ struct fused_map : std::tuple<typename KeyValuePairs::second_type ... >
 
 }
 
-#endif // TINYMPL_FUSED_MAP_HPP 
+#endif // TINYMPL_FUSED_MAP_HPP

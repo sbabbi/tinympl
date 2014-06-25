@@ -13,7 +13,7 @@
 #ifndef TINYMPL_TO_STRING_HPP
 #define TINYMPL_TO_STRING_HPP
 
-#include "string.hpp"
+#include <tinympl/string.hpp>
 
 namespace tinympl
 {
@@ -29,7 +29,7 @@ template<class T,T value,T base = 10,class = void> struct to_string_impl
 };
 
 //Handle negative numbers
-template<class T,T value,T base> struct to_string_impl<T,value,base, 
+template<class T,T value,T base> struct to_string_impl<T,value,base,
 	typename std::enable_if<(value < 0)>::type>
 {
 	typedef typename to_string_impl<T,-value,base>::type tail;
@@ -37,7 +37,7 @@ template<class T,T value,T base> struct to_string_impl<T,value,base,
 };
 
 //Handle one digit numbers
-template<class T,T value,T base> struct to_string_impl<T,value,base, 
+template<class T,T value,T base> struct to_string_impl<T,value,base,
 	typename std::enable_if<(value >= 0 && value < base)>::type>
 {
 	static_assert( value >= 0 && value < 16,"Base > 16 not supported");
@@ -79,4 +79,4 @@ template<long long value> using to_string_ll_t = typename to_string_ll<value>::t
 
 }
 
-#endif // TINYMPL_TO_STRING_HPP 
+#endif // TINYMPL_TO_STRING_HPP

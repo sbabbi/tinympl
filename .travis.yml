@@ -18,6 +18,7 @@ install:
       sudo apt-get --no-install-recommends -y install libclang-common-3.3-dev;
     fi
   - sudo apt-get --no-install-recommends -y install cmake;
+  - sudo apt-get --no-install-recommends -y install libboost-test-dev
   - sudo apt-get -y autoremove --purge;
 # Uncomment the followint to enable coveralls support.
 #  - sudo pip install cpp-coveralls;

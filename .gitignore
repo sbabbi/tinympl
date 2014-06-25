@@ -62,3 +62,4 @@ __pycache__/
 /cmake_install.cmake
 /tinympl_test
 /Testing
+/test/test_tinympl

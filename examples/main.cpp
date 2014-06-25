@@ -33,7 +33,7 @@ void test_fused_map()
 void test_fused_value_map()
 {
 	typedef tinympl::fused_value_map<int,std::string, 6,4,12,18> fmap;
-	fmap mm = {"int","char","long","string"};
+	fmap mm = {{"int","char","long","string"}};
 	
 	assert( mm.at<6>() == "int");
 	assert( mm.at<4>() == "char");
