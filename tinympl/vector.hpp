@@ -13,8 +13,10 @@
 #ifndef TINYMPL_VECTOR_HPP
 #define TINYMPL_VECTOR_HPP
 
-#include <tinympl/algorithm.hpp>
-#include <tinympl/sequence.hpp>
+#include <tinympl/variadic/at.hpp>
+#include <tinympl/variadic/erase.hpp>
+#include <tinympl/erase.hpp>
+#include <tinympl/insert.hpp>
 
 namespace tinympl {
 
