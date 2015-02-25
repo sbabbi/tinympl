@@ -81,7 +81,7 @@ private:
 		{
 			template<class T,class Enable = void> struct pick {typedef T type;};
 			template<class T> struct pick<T, typename std::enable_if< (is_placeholder<T>::value > 0) >::type> {typedef variadic::at_t<is_placeholder<T>::value-1, Args ... > type;};
-			template<class T> struct pick<T, typename std::enable_if< is_bind_expression<T>::type::value>::type> {typedef typename T::template eval<Args...>::type type;};
+			template<class T> struct pick<T, typename std::enable_if< is_bind_expression<T>::value >::type> {typedef typename T::template eval<Args...>::type type;};
 
 			typedef typename pick<Head>::type argument_t;
 
